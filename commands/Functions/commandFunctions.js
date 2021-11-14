@@ -56,9 +56,6 @@ function SnowflakeUser(str, interaction) {
  * @return {String}
  */
 function subsMention(mention, str, snw_flk) {
-  console.log(
-    `Comando usando mencionando SnowFlake(${snw_flk}) - (${mention.tag})`
-  );
   if (str.includes("<@"))
     if (str.includes("<@!"))
       return str.replace(`<@!${snw_flk}>`, `@${mention.tag}`);
