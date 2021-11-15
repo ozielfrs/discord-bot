@@ -39,9 +39,5 @@ module.exports = {
     }
 
     await interaction.reply({ embeds: [embed] });
-    console.log(
-      `Comando USER usado por ${interaction.user.tag} em #${interaction.channel.name}. |` +
-        `${interaction.createdAt.toDateString()} | ${interaction.createdAt.toTimeString()}`
-    );
   },
 };

@@ -87,9 +87,5 @@ module.exports = {
         .setImage(octopus_image.at(getRandomInt(0, octopus_image.length - 2)));
 
     await interaction.reply({ embeds: [embed] });
-    console.log(
-      `Comando POLVO usado por ${interaction.user.tag} em #${interaction.channel.name}. |` +
-        `${interaction.createdAt.toDateString()} | ${interaction.createdAt.toTimeString()}`
-    );
   },
 };
