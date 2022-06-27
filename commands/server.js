@@ -20,30 +20,29 @@ module.exports = {
       .setTitle(`${interaction.guild.name}`)
       .setDescription(
         `Quem comanda esse lugar é: ${user.tag}\n\n` +
-          `Servidor criado em: ${interaction.guild.createdAt.toDateString()}` +
-          `\nàs ${time.replace(`${time.slice(time.indexOf("(") - 1)}`, ``)}\n`
+        `Servidor criado em: ${interaction.guild.createdAt.toDateString()}` +
+        `\nàs ${time.replace(`${time.slice(time.indexOf("(") - 1)}`, ``)}\n`
       )
       .setColor(`#2a7ed2`)
-      .setImage(
-        `${interaction.guild.iconURL({
+      .setImage(`${interaction.guild.iconURL({
           format: "webp",
           size: 256,
           dynamic: true,
         })}`
       )
-      .setAuthor(
-        `${member.user.tag}`,
-        member.displayAvatarURL({ format: "webp", size: 256, dynamic: true })
+      .setAuthor({
+        name:
+          `${member.user.tag}`, iconURL: member.displayAvatarURL({ format: "webp", size: 256, dynamic: true })
+      }
       );
 
     time = member.joinedAt.toTimeString();
 
-    embed.setFooter(
-      `${
-        interaction.user.tag
-      } entrou em: ${interaction.guild.joinedAt.toDateString()}` +
-        `\nàs ${time.replace(`${time.slice(time.indexOf("(") - 1)}`, ``)}`
-    );
+    embed.setFooter({
+      text: `${interaction.user.tag
+        } entrou em: ${interaction.guild.joinedAt.toDateString()}` +
+        `\nàs ${time.replace(`${time.slice(time.indexOf("(") - 1)}`, ``)}`, iconURL: undefined
+    });
 
     await interaction.reply({ embeds: [embed] });
   },

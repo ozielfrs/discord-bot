@@ -33,16 +33,16 @@ module.exports = {
 
     let op = String(
       `A primeira opção era: ` +
-        str1 +
-        `\nA segunda opção era: ` +
-        str2 +
-        `\nMAS O 🐙 DECIDIU ESCOLHER A MELHOR ENTRE ELAS!`
+      str1 +
+      `\nA segunda opção era: ` +
+      str2 +
+      `\nMAS O 🐙 DECIDIU ESCOLHER A MELHOR ENTRE ELAS!`
     );
 
     let embed = new MessageEmbed()
       .setColor(`#be29ec`)
       .setTitle(`${interaction.user.tag} PERGUNTOU AO :octopus:!`)
-      .setFooter(op);
+      .setFooter({ text: op, iconURL: undefined });
 
     let octopus_image = [
       "https://i.imgur.com/IJN4w4N.png",

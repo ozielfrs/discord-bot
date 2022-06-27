@@ -4,7 +4,24 @@
     "@discordjs/builders": "^0.8.2",
     "@discordjs/rest": "^0.1.0-canary.0",
     "discord-api-types": "^0.20.2",
-    "discord.js": "^13.3.1",
+    "discord.js": "^13.8.1",
     "dotenv": "^10.0.0"
-  }
+  },
+  "name": "discord-bot-node",
+  "description": "Sejam bem-vindos ao início desse \"Projeto\". :smile:",
+  "version": "1.0.0",
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ozielfrs/Discord-Bot-Node.js.git"
+  },
+  "author": "Oziel Ferreira da Silva",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ozielfrs/Discord-Bot-Node.js/issues"
+  },
+  "homepage": "https://github.com/ozielfrs/Discord-Bot-Node.js#readme"
 }

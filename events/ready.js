@@ -3,6 +3,6 @@ module.exports = {
   once: true,
 
   execute(client) {
-    console.log(`Cliente pronto! O bot está como ${client.user.tag}.`);
+    console.log(`Cliente pronto, ${client.user.tag}!`);
   },
 };

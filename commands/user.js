@@ -18,25 +18,26 @@ module.exports = {
     let embed = new MessageEmbed().setTimestamp(interaction.createdAt),
       user = interaction.options.getUser("mention"),
       color = interaction.member.displayHexColor,
-      member;
+      member = interaction.guild.members.cache.find(
+        (member) => member.id === interaction.user.id
+      );
+
     if (user) {
-      member = interaction.guild.members.cache.get(user.id);
-      color = member.displayHexColor;
-      embed
-        .setColor(color)
-        .setImage(user.avatarURL({ format: "webp", size: 256, dynamic: true }))
-        .setTitle(`Informações de ${user.tag}`)
-        .setDescription(`Conta criada em: ${user.createdAt.toDateString()}.`);
+      color = interaction.guild.members.cache.get(user.id).displayHexColor;
     } else {
-      user = interaction.user;
-      embed
-        .setColor(color)
-        .setImage(user.avatarURL({ format: "webp", size: 256, dynamic: true }))
-        .setTitle(`${user.tag} Information`)
-        .setDescription(
-          `Account created at: ${user.createdAt.toDateString()}.`
-        );
+      user = interaction.user
     }
+    embed
+      .setAuthor({
+        name:
+          `${member.user.tag}`, iconURL: member.displayAvatarURL({ format: "webp", size: 256, dynamic: true })
+      })
+      .setColor(color)
+      .setImage(user.avatarURL({ format: "webp", size: 256, dynamic: true }))
+      .setTitle(`${user.tag} information`)
+      .setDescription(
+        `Account created at: ${user.createdAt.toDateString()}.`
+      );
 
     await interaction.reply({ embeds: [embed] });
   },
