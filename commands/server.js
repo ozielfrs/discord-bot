@@ -1,10 +1,10 @@
-const { SlashCommandBuilder } = require("@discordjs/builders");
-const { MessageEmbed } = require("discord.js");
+const { SlashCommandBuilder } = require(`@discordjs/builders`);
+const { MessageEmbed } = require(`discord.js`);
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName("server")
-    .setDescription("Responde com informações do servidor."),
+    .setName(`server`)
+    .setDescription(`Responde com informações do servidor.`),
 
   execute: async function (interaction) {
     let embed = new MessageEmbed(),
@@ -21,18 +21,18 @@ module.exports = {
       .setDescription(
         `Quem comanda esse lugar é: ${user.tag}\n\n` +
         `Servidor criado em: ${interaction.guild.createdAt.toDateString()}` +
-        `\nàs ${time.replace(`${time.slice(time.indexOf("(") - 1)}`, ``)}\n`
+        `\nàs ${time.replace(`${time.slice(time.indexOf(`(`) - 1)}`, ``)}\n`
       )
       .setColor(`#2a7ed2`)
       .setImage(`${interaction.guild.iconURL({
-          format: "webp",
-          size: 256,
-          dynamic: true,
-        })}`
+        format: `webp`,
+        size: 256,
+        dynamic: true,
+      })}`
       )
       .setAuthor({
         name:
-          `${member.user.tag}`, iconURL: member.displayAvatarURL({ format: "webp", size: 256, dynamic: true })
+          `${member.user.tag}`, iconURL: member.displayAvatarURL({ format: `webp`, size: 256, dynamic: true })
       }
       );
 
@@ -41,7 +41,7 @@ module.exports = {
     embed.setFooter({
       text: `${interaction.user.tag
         } entrou em: ${interaction.guild.joinedAt.toDateString()}` +
-        `\nàs ${time.replace(`${time.slice(time.indexOf("(") - 1)}`, ``)}`, iconURL: undefined
+        `\nàs ${time.replace(`${time.slice(time.indexOf(`(`) - 1)}`, ``)}`, iconURL: undefined
     });
 
     await interaction.reply({ embeds: [embed] });

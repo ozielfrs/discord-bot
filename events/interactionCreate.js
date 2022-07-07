@@ -1,5 +1,5 @@
 module.exports = {
-  name: "interactionCreate",
+  name: `interactionCreate`,
 
   async execute(interaction) {
     if (interaction.isCommand()) {
@@ -11,7 +11,7 @@ module.exports = {
         } catch (error) {
           console.error(error);
           await interaction.reply({
-            content: "Execution error!",
+            content: `Execution error!`,
             ephemeral: true,
           });
         }

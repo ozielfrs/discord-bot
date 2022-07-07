@@ -1,4 +1,4 @@
-const { CommandInteraction, User } = require("discord.js");
+const { CommandInteraction, User } = require(`discord.js`);
 
 /**
  *
@@ -20,24 +20,24 @@ function getRandomInt(min, max) {
  */
 function SnowflakeUser(str, interaction) {
   let mention, aux_snwflk;
-  if (str.includes("<@")) {
+  if (str.includes(`<@`)) {
     aux_snwflk = str
-      .slice(str.indexOf("<@"), str.indexOf(">"))
-      .replace("<@", "");
+      .slice(str.indexOf(`<@`), str.indexOf(`>`))
+      .replace(`<@`, ``);
 
-    if (str.includes("<@!"))
+    if (str.includes(`<@!`))
       aux_snwflk = str
-        .slice(str.indexOf("<@!"), str.indexOf(">"))
-        .replace("<@!", "");
+        .slice(str.indexOf(`<@!`), str.indexOf(`>`))
+        .replace(`<@!`, ``);
 
     mention = interaction.client.users.cache.find(
       (mention) => mention.id === aux_snwflk
     );
 
-    if (str.includes("<@&")) {
+    if (str.includes(`<@&`)) {
       aux_snwflk = str
-        .slice(str.indexOf("<@&"), str.indexOf(">"))
-        .replace("<@&", "");
+        .slice(str.indexOf(`<@&`), str.indexOf(`>`))
+        .replace(`<@&`, ``);
 
       mention = interaction.client.guilds.cache
         .find((guild) => guild.id === interaction.guild.id)
@@ -56,10 +56,10 @@ function SnowflakeUser(str, interaction) {
  * @return {String}
  */
 function subsMention(mention, str, snw_flk) {
-  if (str.includes("<@"))
-    if (str.includes("<@!"))
+  if (str.includes(`<@`))
+    if (str.includes(`<@!`))
       return str.replace(`<@!${snw_flk}>`, `@${mention.tag}`);
-  if (str.includes("<@&"))
+  if (str.includes(`<@&`))
     return str.replace(`<@&${snw_flk}>`, `@${mention.name}`);
   else return str.replace(`<@${snw_flk}>`, `@${mention.tag}`);
 }
@@ -79,10 +79,10 @@ function subsAllMentions(str, interaction) {
       interaction
     );
 
-  if (str.includes(">"))
+  if (str.includes(`>`))
     return (
-      str.slice(0, str.indexOf(">") + 1) +
-      subsAllMentions(str.slice(str.indexOf(">") + 1, str.length), interaction)
+      str.slice(0, str.indexOf(`>`) + 1) +
+      subsAllMentions(str.slice(str.indexOf(`>`) + 1, str.length), interaction)
     );
 
   return str;
