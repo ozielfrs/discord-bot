@@ -1,9 +1,9 @@
-const { SlashCommandBuilder } = require(`@discordjs/builders`);
-const { MessageEmbed } = require(`discord.js`);
+const { SlashCommandBuilder } = require(`@discordjs/builders`)
+const { MessageEmbed } = require(`discord.js`)
 const {
   subsAllMentions,
   getRandomInt,
-} = require(`./Functions/commandFunctions.js`);
+} = require(`./Functions/commandFunctions.js`)
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -25,11 +25,11 @@ module.exports = {
     ),
 
   async execute(interaction) {
-    let str1 = String(`${interaction.options.getString(`primeira`)}`);
-    let str2 = String(`${interaction.options.getString(`segunda`)}`);
+    let str1 = String(`${interaction.options.getString(`primeira`)}`)
+    let str2 = String(`${interaction.options.getString(`segunda`)}`)
 
-    str1 = subsAllMentions(str1, interaction);
-    str2 = subsAllMentions(str2, interaction);
+    str1 = subsAllMentions(str1, interaction)
+    str2 = subsAllMentions(str2, interaction)
 
     let op = String(
       `A primeira opção era: ` +
@@ -37,12 +37,12 @@ module.exports = {
       `\nA segunda opção era: ` +
       str2 +
       `\nMAS O 🐙 DECIDIU ESCOLHER A MELHOR ENTRE ELAS!`
-    );
+    )
 
     let embed = new MessageEmbed()
       .setColor(`#be29ec`)
       .setTitle(`${interaction.user.tag} PERGUNTOU AO :octopus:!`)
-      .setFooter({ text: op, iconURL: undefined });
+      .setFooter({ text: op, iconURL: undefined })
 
     let octopus_image = [
       `https://i.imgur.com/IJN4w4N.png`,
@@ -57,16 +57,16 @@ module.exports = {
       `https://c.tenor.com/CQOtdA2_8okAAAAC/squid_girl-squid.gif`,
       `https://c.tenor.com/uXDPbEULXtsAAAAM/squidward-handsome.gif`,
       `https://c.tenor.com/dtwnYquTNhMAAAAS/sus-imposter.gif`,
-    ];
+    ]
 
-    let octopus_choice = getRandomInt(0, 5000);
+    let octopus_choice = getRandomInt(0, 5000)
     if (octopus_choice <= 2500)
       if (octopus_choice === 2500)
         embed
           .setDescription(
             `\nO :octopus: DECIDIU QUE NENHUMA DAS OPÇÕES É DÍGNA!`
           )
-          .setImage(octopus_image.at(octopus_image.length - 1));
+          .setImage(octopus_image.at(octopus_image.length - 1))
       else
         embed
           .setDescription(
@@ -76,7 +76,7 @@ module.exports = {
           )
           .setImage(
             octopus_image.at(getRandomInt(0, octopus_image.length - 2))
-          );
+          )
     else
       embed
         .setDescription(
@@ -84,8 +84,8 @@ module.exports = {
             `segunda`
           )}!`
         )
-        .setImage(octopus_image.at(getRandomInt(0, octopus_image.length - 2)));
+        .setImage(octopus_image.at(getRandomInt(0, octopus_image.length - 2)))
 
-    await interaction.reply({ embeds: [embed] });
+    await interaction.reply({ embeds: [embed] })
   },
-};
+}

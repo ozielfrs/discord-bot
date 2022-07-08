@@ -1,5 +1,5 @@
-const { SlashCommandBuilder } = require(`@discordjs/builders`);
-const { MessageEmbed } = require(`discord.js`);
+const { SlashCommandBuilder } = require(`@discordjs/builders`)
+const { MessageEmbed } = require(`discord.js`)
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -20,10 +20,10 @@ module.exports = {
       color = interaction.member.displayHexColor,
       member = interaction.guild.members.cache.find(
         (member) => member.id === interaction.user.id
-      );
+      )
 
     if (user) {
-      color = interaction.guild.members.cache.get(user.id).displayHexColor;
+      color = interaction.guild.members.cache.get(user.id).displayHexColor
     } else {
       user = interaction.user
     }
@@ -37,8 +37,8 @@ module.exports = {
       .setTitle(`${user.tag} information`)
       .setDescription(
         `Account created at: ${user.createdAt.toDateString()}.`
-      );
+      )
 
-    await interaction.reply({ embeds: [embed] });
+    await interaction.reply({ embeds: [embed] })
   },
-};
+}
