@@ -1,8 +1,8 @@
 module.exports = {
-  name: `ready`,
-  once: true,
+    name: `ready`,
+    once: true,
 
-  execute(client) {
-    console.log(`Cliente pronto, ${client.user.tag}!`);
-  },
+    execute(client) {
+        console.log(`Cliente pronto, ${client.user.tag}!`);
+    },
 };
