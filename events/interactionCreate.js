@@ -5,21 +5,21 @@ module.exports = {
         if (interaction.isCommand()) {
             let command = interaction.client.commands.get(
                 interaction.commandName
-            );
+            )
 
             if (command) {
                 try {
-                    await command.execute(interaction);
+                    await command.execute(interaction)
                 } catch (error) {
-                    console.error(error);
+                    console.error(error)
                     await interaction.reply({
                         content: `Execution error!`,
                         ephemeral: true,
-                    });
+                    })
                 }
-            } else return;
+            } else return
         }
         if (interaction.isButton()) {
         }
     },
-};
+}

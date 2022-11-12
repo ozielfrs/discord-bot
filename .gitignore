@@ -1,0 +1,4 @@
+node_modules
+#All .json files.
+/*.json
+/*.prettierrc

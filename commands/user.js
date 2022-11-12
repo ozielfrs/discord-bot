@@ -1,52 +1,106 @@
-const { SlashCommandBuilder } = require(`@discordjs/builders`);
-const { MessageEmbed } = require(`discord.js`);
+const { SlashCommandBuilder } = require(`@discordjs/builders`),
+    { MessageEmbed } = require(`discord.js`)
+
+let cmdTxt = {
+    locale: `pt-br`,
+    name: `user`,
+    desc: `Responde com a informação do usuário mencionado, ou do usuário que tiver usado o comando.`,
+    opt: {
+        name: `mention`,
+        desc: `Marque um usuário`,
+        req: false,
+    },
+    imgFmt: {
+        size: 256,
+        dynamic: true,
+    },
+}
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName(`user`)
-        .setDescription(
-            `Responde com a informação do usuário mencionado, ou do usuário que tiver usado o comando.`
-        )
+        .setName(cmdTxt.name)
+        .setDescription(cmdTxt.desc)
         .addUserOption((option) =>
             option
-                .setName(`mention`)
-                .setDescription(`Selecione um usuário.`)
-                .setRequired(false)
+                .setName(cmdTxt.opt.name)
+                .setDescription(cmdTxt.opt.desc)
+                .setRequired(cmdTxt.opt.req)
         ),
 
     async execute(interaction) {
-        let embed = new MessageEmbed().setTimestamp(interaction.createdAt),
-            user = interaction.options.getUser(`mention`),
-            color = interaction.member.displayHexColor,
-            member = interaction.guild.members.cache.find(
-                (member) => member.id === interaction.user.id
-            );
+        let guild = interaction.guild
 
-        if (user) {
-            color = interaction.guild.members.cache.get(
-                user.id
-            ).displayHexColor;
-        } else {
-            user = interaction.user;
+        let mention
+        interaction.options.getUser(cmdTxt.opt.name)
+            ? (mention = guild.members.cache.find(
+                  (user) =>
+                      user.id ===
+                      interaction.options.getUser(cmdTxt.opt.name).id
+              ))
+            : null,
+            (member = guild.members.cache.find(
+                (user) => user.id === interaction.user.id
+            ))
+
+        let embed = {
+            author: {
+                name: member.displayName,
+                url: String(),
+                iconURL: member.displayAvatarURL(cmdTxt.imgFmt),
+                proxyIconURL: String(),
+            },
+            color: mention ? mention.displayColor : member.displayColor,
+            description: `Conta criada em: ${
+                mention
+                    ? mention.user.createdAt.toLocaleString(cmdTxt.locale, {
+                          timeZone: 'UTC',
+                      })
+                    : member.user.createdAt.toLocaleString(cmdTxt.locale, {
+                          timeZone: 'UTC',
+                      })
+            }.`,
+            footer: {
+                text: `Pertence ao servidor desde: ${
+                    mention
+                        ? mention.joinedAt.toLocaleString(cmdTxt.locale, {
+                              timeZone: 'UTC',
+                          })
+                        : member.joinedAt.toLocaleString(cmdTxt.locale, {
+                              timeZone: 'UTC',
+                          })
+                }\n`,
+                iconURL: guild.iconURL(cmdTxt.imgFmt),
+                proxyIconURL: String(),
+            },
+            hexColor: member.displayHexColor,
+            image: {
+                url: mention
+                    ? mention.displayAvatarURL(cmdTxt.imgFmt)
+                    : member.displayAvatarURL(cmdTxt.imgFmt),
+                proxyURL: String(),
+                height: Number(256),
+                width: Number(256),
+            },
+            length: Number(),
+            thumbnail: {
+                url: String(),
+                proxyURL: String(),
+                height: Number(),
+                width: Number(),
+            },
+            timestamp: interaction.createdAt,
+            title: `Informações de ${
+                mention ? mention.displayName : member.displayName
+            } (${mention ? mention.user.tag : member.user.tag})`,
+            url: String(),
+            video: {
+                url: String(),
+                proxyURL: String(),
+                height: Number(),
+                width: Number(),
+            },
         }
-        embed
-            .setAuthor({
-                name: `${member.user.tag}`,
-                iconURL: member.displayAvatarURL({
-                    format: `webp`,
-                    size: 256,
-                    dynamic: true,
-                }),
-            })
-            .setColor(color)
-            .setImage(
-                user.avatarURL({ format: `webp`, size: 256, dynamic: true })
-            )
-            .setTitle(`${user.tag} information`)
-            .setDescription(
-                `Account created at: ${user.createdAt.toDateString()}.`
-            );
 
-        await interaction.reply({ embeds: [embed] });
+        await interaction.reply({ embeds: [embed] })
     },
-};
+}
