@@ -19,7 +19,5 @@ module.exports = {
                 }
             } else return
         }
-        if (interaction.isButton()) {
-        }
     },
 }

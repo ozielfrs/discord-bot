@@ -1,6 +1,6 @@
 const { REST } = require(`@discordjs/rest`),
     { Routes } = require(`discord-api-types/v10`),
-    { clientId, guildId, token } = require(`./config.json`),
+    { clientId, guildIds, token } = require(`./config.json`),
     fs = require(`node:fs`)
 
 const commands = []
@@ -26,14 +26,15 @@ const rest = new REST({ version: `10` }).setToken(token)
         )
 
         // The put method is used to fully refresh all commands in the guild with the current set
-        const data = await rest.put(
-            Routes.applicationGuildCommands(clientId, guildId),
-            { body: commands }
-        )
-
-        console.log(
-            `Successfully reloaded ${data.length} application (/) commands.`
-        )
+        for (const guild of guildIds) {
+            const data = await rest.put(
+                Routes.applicationGuildCommands(clientId, guild),
+                { body: commands }
+            )
+            console.log(
+                `Successfully reloaded ${data.length} application (/) commands in ${guild}.`
+            )
+        }
     } catch (error) {
         // And of course, make sure you catch and log any errors!
         console.error(error)
