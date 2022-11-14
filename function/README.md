@@ -7,6 +7,6 @@
 
 -   Créditos:
 
-    -   Badge Images from [here](https://github.com/Vtz7/Badges) by [Vtz7](https://github.com/Vtz7)
+    -   Badge Images from [this repository](https://github.com/Vtz7/Badges) by [Vtz7](https://github.com/Vtz7)
 
     -   Badge Format in JS inspired from [this repository](https://github.com/lewisakura/discord-flags/blob/master/flags/user.json) by [lewisakura](https://github.com/lewisakura).

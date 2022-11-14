@@ -12,4 +12,7 @@ Trabalhando em construir um xadrez entre duas pessoas via Slash Commands.
 Decidi deixar o código em aberto caso alguém precise de qualquer referência para construir um bot.
 
 -   Créditos:
-    -   Badge Icons from [HERE](https://github.com/Vtz7/Badges)! I merely converted them to PNG, credits to the [person](https://github.com/Vtz7) who uploaded it! The badge icons are located at [here](function/bagdes/img/).
+
+    -   Badge Images from [here](https://github.com/Vtz7/Badges) by [Vtz7](https://github.com/Vtz7)
+
+    -   Badge Format in JS inspired from [this repository](https://github.com/lewisakura/discord-flags/blob/master/flags/user.json) by [lewisakura](https://github.com/lewisakura).
