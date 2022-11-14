@@ -7,7 +7,7 @@ const {
 let cmd = {
     local: `pt-br`,
     name: `chess`,
-    desc: `Use para jogar xadres com um usuário`,
+    desc: `Use para jogar xadrez com um usuário`,
     opt: {
         name: `mention`,
         desc: `Marque um usuário`,
