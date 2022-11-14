@@ -2,7 +2,9 @@ const { SlashCommandBuilder } = require(`@discordjs/builders`),
     { CommandInteraction } = require('discord.js')
 
 module.exports = {
-    data: new SlashCommandBuilder().setName(cmd.name).setDescription(cmd.desc),
+    data: new SlashCommandBuilder()
+        .setName(`prototype`)
+        .setDescription(`Embed Prototype`),
 
     /**
      *
