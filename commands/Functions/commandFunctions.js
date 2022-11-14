@@ -61,8 +61,6 @@ function mentionToName(str, e) {
             .replace(usrS, ``)
         pos = str.indexOf(usrS, pos) + 1
 
-        console.log(pos)
-
         let usrM = e.guild.members.cache.find((u) => u.id === snwflk)
 
         if (usrM) {
