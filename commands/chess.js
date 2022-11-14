@@ -1,4 +1,8 @@
-const { SlashCommandBuilder, Colors } = require(`discord.js`)
+const {
+    SlashCommandBuilder,
+    Colors,
+    CommandInteraction,
+} = require(`discord.js`)
 
 let cmd = {
     local: `pt-br`,
@@ -27,6 +31,10 @@ module.exports = {
                 .setRequired(cmd.opt.req)
         ),
 
+    /**
+     *
+     * @param {CommandInteraction} e
+     */
     async execute(e) {
         let guild = e.guild
         let member = guild.members.cache.find((usr) => usr.id === e.user.id),

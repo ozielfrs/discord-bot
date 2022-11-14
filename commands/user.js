@@ -1,4 +1,6 @@
-const { SlashCommandBuilder } = require(`@discordjs/builders`)
+const { SlashCommandBuilder } = require(`@discordjs/builders`),
+    { CommandInteraction } = require('discord.js'),
+    { badgesFromDisc } = require(`../function/bagdes/discordBadges`)
 
 let cmd = {
     local: `pt-br`,
@@ -26,73 +28,99 @@ module.exports = {
                 .setRequired(cmd.opt.req)
         ),
 
+    /**
+     *
+     * @param {CommandInteraction} e
+     */
     async execute(e) {
         let guild = e.guild
 
-        let mention
-        e.options.getUser(cmd.opt.name)
-            ? (mention = guild.members.cache.find(
-                  (user) => user.id === e.options.getUser(cmd.opt.name).id
-              ))
-            : null,
-            (member = guild.members.cache.find((user) => user.id === e.user.id))
+        let mention = e.options.getUser(cmd.opt.name)
+                ? guild.members.cache.find(
+                      (user) => user.id === e.options.getUser(cmd.opt.name).id
+                  )
+                : guild.members.cache.find((user) => user.id === e.user.id),
+            fields = [
+                {
+                    inline: true,
+                    name: String(`Conta criada:`),
+                    value: String(
+                        `<t:${(
+                            mention.user.createdTimestamp * 1e-3
+                        ).toFixed()}:R>`
+                    ),
+                },
+                {
+                    inline: true,
+                    name: String(`Pertence ao servidor:`),
+                    value: String(
+                        `<t:${(mention.joinedTimestamp * 1e-3).toFixed()}:R>`
+                    ),
+                },
+                {
+                    inline: true,
+                    name: String(`ID:`),
+                    value: String(mention.user.id),
+                },
+            ]
+
+        let badges = mention.user.flags.toArray(),
+            badgesField = {
+                inline: true,
+                name: String(`Flags:`),
+                value: String(`🌌 Working on it`),
+            }
+
+        if (badges.length != 0) {
+            badgesField.value = badges
+                .map(
+                    (val) =>
+                        (val = badgesFromDisc.find((e) => e.name === val).emoji)
+                )
+                .join(` `)
+        }
+
+        fields.push(badgesField)
 
         let emb = {
             author: {
-                name: member.displayName,
+                name: String(`${mention.displayName} (${mention.user.tag})`),
                 url: String(),
-                iconURL: member.displayAvatarURL(cmd.fmt),
-                proxyIconURL: String(),
+                icon_url: String(),
+                proxy_icon_url: String(),
             },
-            color: mention ? mention.displayColor : member.displayColor,
-            description: `Conta criada em: ${
-                mention
-                    ? mention.user.createdAt.toLocaleString(cmd.local, {
-                          timeZone: 'UTC',
-                      })
-                    : member.user.createdAt.toLocaleString(cmd.local, {
-                          timeZone: 'UTC',
-                      })
-            }.`,
+            color: Number(mention.displayColor),
+            description: String(),
+            fields: fields,
             footer: {
-                text: `Pertence ao servidor desde: ${
-                    mention
-                        ? mention.joinedAt.toLocaleString(cmd.local, {
-                              timeZone: 'UTC',
-                          })
-                        : member.joinedAt.toLocaleString(cmd.local, {
-                              timeZone: 'UTC',
-                          })
-                }\n`,
-                iconURL: guild.iconURL(cmd.fmt),
-                proxyIconURL: String(),
+                text: String(guild.name),
+                icon_url: String(guild.iconURL()),
+                proxy_icon_url: String(),
             },
-            hexColor: member.displayHexColor,
             image: {
-                url: mention
-                    ? mention.displayAvatarURL(cmd.fmt)
-                    : member.displayAvatarURL(cmd.fmt),
-                proxyURL: String(),
                 height: Number(),
                 width: Number(),
+                url: String(mention.displayAvatarURL(cmd.fmt)),
+                proxy_url: String(),
             },
-            length: Number(),
-            thumbnail: {
+            provider: {
+                name: String(),
                 url: String(),
-                proxyURL: String(),
+            },
+            thumbnail: {
                 height: Number(),
                 width: Number(),
+                url: String(),
+                proxy_url: String(),
             },
-            timestamp: e.createdAt,
-            title: `Informações de ${
-                mention ? mention.displayName : member.displayName
-            } (${mention ? mention.user.tag : member.user.tag})`,
+            timestamp: String(new Date().toISOString()),
+            title: String(),
             url: String(),
             video: {
-                url: String(),
-                proxyURL: String(),
                 height: Number(),
                 width: Number(),
+                url: String(),
+                proxy_url: String(),
             },
         }
 

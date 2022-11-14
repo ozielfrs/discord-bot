@@ -1,18 +1,21 @@
 module.exports = {
     name: `interactionCreate`,
 
-    async execute(interaction) {
-        if (interaction.isCommand()) {
-            let command = interaction.client.commands.get(
-                interaction.commandName
-            )
+    /**
+     *
+     * @param {*} e
+     * @returns
+     */
+    async execute(e) {
+        if (e.isCommand()) {
+            let command = e.client.commands.get(e.commandName)
 
             if (command) {
                 try {
-                    await command.execute(interaction)
+                    await command.execute(e)
                 } catch (error) {
                     console.error(error)
-                    await interaction.reply({
+                    await e.reply({
                         content: `Execution error!`,
                         ephemeral: true,
                     })

@@ -1,10 +1,11 @@
 const { SlashCommandBuilder } = require(`@discordjs/builders`),
-    { Colors } = require(`discord.js`),
-    { mentionToName, random } = require(`./Functions/commandFunctions.js`)
+    { CommandInteraction, Colors } = require(`discord.js`),
+    { random } = require(`../function/cmdAux`)
 
 let cmd = {
     name: `polvo`,
     desc: `O polvo decide qual a melhor entre duas opções (ele pode mudar de opinião).`,
+    strmax: 256,
     opt1: {
         name: `primeira`,
         desc: `Escreva a primeira opção.`,
@@ -19,10 +20,9 @@ let cmd = {
         title: `#0 PERGUNTOU AO 🐙!`,
         color: Colors.Purple,
         txt: {
-            opts:
-                `A primeira opção era: #1\n` +
-                `A segunda opção era: #2\n` +
-                `MAS O 🐙 DECIDIU ESCOLHER A MELHOR ENTRE ELAS!`,
+            opt1: `A primeira opção era`,
+            opt2: `A segunda opção era`,
+            dec: `O 🐙 DECIDIU ESCOLHER A MELHOR ENTRE ELAS!`,
             none: `\nO 🐙 DECIDIU QUE NENHUMA DAS OPÇÕES É DIGNA!`,
             final: `\nA escolha do 🐙 é: #0!`,
         },
@@ -61,64 +61,80 @@ module.exports = {
                 .setName(cmd.opt1.name)
                 .setDescription(cmd.opt1.desc)
                 .setRequired(cmd.opt1.req)
+                .setMaxLength(cmd.strmax)
         )
         .addStringOption((op) =>
             op
                 .setName(cmd.opt2.name)
                 .setDescription(cmd.opt2.desc)
                 .setRequired(cmd.opt2.req)
+                .setMaxLength(cmd.strmax)
         ),
 
+    /**
+     *
+     * @param {CommandInteraction} e
+     */
     async execute(e) {
-        let midterm = Number(10)
+        let midterm = Number(50)
 
         let octopus_choice = random(midterm * 2),
             op1 = e.options.getString(cmd.opt1.name),
-            op2 = e.options.getString(cmd.opt2.name)
-        let str1 = mentionToName(op1, e),
-            str2 = mentionToName(op2, e)
-
-        let op = cmd.emb.txt.opts.replace(`#1`, str1).replace(`#2`, str2),
+            op2 = e.options.getString(cmd.opt2.name),
             guild = e.guild
 
         let member = guild.members.cache.find((user) => user.id === e.user.id)
 
         let emb = {
             author: {
-                name: `${member.displayName} (${member.user.tag})`,
+                name: String(`${member.displayName} (${member.user.tag})`),
                 url: String(),
-                iconURL: member.displayAvatarURL(cmd.fmt),
-                proxyIconURL: String(),
+                icon_url: String(member.displayAvatarURL()),
+                proxy_icon_url: String(),
             },
-            color: cmd.emb.color,
+            color: Number(cmd.emb.color),
             description: String(),
+            fields: [
+                {
+                    inline: true,
+                    name: String(cmd.emb.txt.opt1),
+                    value: String(op1),
+                },
+                {
+                    inline: true,
+                    name: String(cmd.emb.txt.opt2),
+                    value: String(op2),
+                },
+            ],
             footer: {
-                text: op,
-                iconURL: guild.iconURL(cmd.fmt),
-                proxyIconURL: String(),
+                text: String(cmd.emb.txt.dec),
+                icon_url: String(guild.iconURL()),
+                proxy_icon_url: String(),
             },
-            hexColor: cmd.emb.color,
             image: {
-                url: String(),
-                proxyURL: String(),
                 height: Number(),
                 width: Number(),
+                url: String(),
+                proxy_url: String(),
             },
-            length: Number(),
+            provider: {
+                name: String(),
+                url: String(),
+            },
             thumbnail: {
-                url: String(),
-                proxyURL: String(),
                 height: Number(),
                 width: Number(),
+                url: String(),
+                proxy_url: String(),
             },
-            timestamp: String(),
-            title: cmd.emb.title.replace(`#0`, member.displayName),
+            timestamp: String(new Date().toISOString()),
+            title: String(cmd.emb.title.replace(`#0`, member.displayName)),
             url: String(),
             video: {
-                url: String(),
-                proxyURL: String(),
                 height: Number(),
                 width: Number(),
+                url: String(),
+                proxy_url: String(),
             },
         }
 
@@ -132,6 +148,7 @@ module.exports = {
             emb.description = cmd.emb.txt.final.replace(`#0`, op2)
             emb.image.url = cmd.emb.images.at(random(cmd.emb.images.length - 2))
         }
+
         await e.reply({ embeds: [emb] })
     },
 }
