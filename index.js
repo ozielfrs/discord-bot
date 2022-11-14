@@ -2,33 +2,30 @@ const { Client, Events, GatewayIntentBits, Collection } = require(`discord.js`),
     { token } = require(`./config.json`),
     fs = require('node:fs')
 
-const client = new Client({ intents: [GatewayIntentBits.Guilds] })
+const c = new Client({ intents: [GatewayIntentBits.Guilds] }) //client
 
-client.once(Events.ClientReady, (c) => {
+c.once(Events.ClientReady, (c) => {
     console.log(`Ready! Logged in as ${c.user.tag}`)
 })
 
-client.commands = new Collection()
+c.commands = new Collection()
 
-const commandFiles = fs
-        .readdirSync(`./commands/`)
-        .filter((file) => file.endsWith(`.js`)),
-    eventFiles = fs
-        .readdirSync(`./events`)
-        .filter((file) => file.endsWith(`.js`))
+const cF = fs.readdirSync(`./commands/`).filter((file) => file.endsWith(`.js`)), //command files
+    eF = fs.readdirSync(`./events`).filter((file) => file.endsWith(`.js`)) //event files
 
-for (let file of commandFiles) {
-    let command = require(`./commands/${file}`)
-    client.commands.set(command.data.name, command)
+//f for files
+for (let f of cF) {
+    let command = require(`./commands/${f}`)
+    c.commands.set(command.data.name, command)
 }
 
-for (const file of eventFiles) {
-    let event = require(`./events/${file}`)
-    if (event.once) {
-        client.once(event.name, (...args) => event.execute(...args))
+for (const f of eF) {
+    let e = require(`./events/${f}`)
+    if (e.once) {
+        c.once(e.name, (...args) => e.execute(...args))
     } else {
-        client.on(event.name, (...args) => event.execute(...args))
+        c.on(e.name, (...args) => e.execute(...args))
     }
 }
 
-client.login(token)
+c.login(token)

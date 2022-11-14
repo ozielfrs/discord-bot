@@ -1,107 +1,104 @@
-const { CommandInteraction, User } = require(`discord.js`)
+const { CommandInteraction } = require(`discord.js`)
 
 /**
  *
- * @param {number} min Valor mínimo a ser obtido pela randomização.
- * @param {number} max Valor máximo a ser obtido pela randomização.
+ * @param {number} n Valor mínimo a ser obtido pela randomização.
+ * @param {number} m Valor máximo a ser obtido pela randomização.
  * @return {number} Número aleatório entre o mínimo e máximo.
  */
-function random(min, max) {
-    min = Math.ceil(min)
-    max = Math.floor(max)
-    return Math.floor(Math.random() * (max - min)) + min
+function random(n, m) {
+    n = Math.ceil(n)
+    m = Math.floor(m)
+    return Math.floor(Math.random() * (m - n)) + n
 }
 
 /**
  *
- * @param {number} max Valor máximo a ser obtido pela randomização.
+ * @param {number} m Valor máximo a ser obtido pela randomização.
  * @return {number} Número aleatório entre o 0 e número definido.
  */
-function random(max) {
-    max = Math.floor(max)
-    return Math.floor(Math.random() * max)
+function random(m) {
+    m = Math.floor(m)
+    return Math.floor(Math.random() * m)
 }
 
 /**
  *
- * @param {String} str
- * @param {CommandInteraction} interaction
- * @return {[User || Role, String]} Usuário|Role e sua respectiva Snowflake se a operação for bem sucedida
+ * @param {String} str String with mentions replaced by names
+ * @param {CommandInteraction} e Interaction with the user
+ * @returns
  */
-function SnowflakeUser(str, interaction) {
-    let mention, aux_snwflk
-    if (str.includes(`<@`)) {
-        aux_snwflk = str
-            .slice(str.indexOf(`<@`), str.indexOf(`>`))
-            .replace(`<@`, ``)
+function mentionToName(str, e) {
+    let snwflk,
+        rlS = `<@&`,
+        usrS = `<@`,
+        chS = `<#`,
+        pos = 0
+    while (str.includes(rlS, pos)) {
+        snwflk = str
+            .slice(
+                str.indexOf(rlS, pos),
+                str.indexOf(`>`, str.indexOf(rlS, pos))
+            )
+            .replace(rlS, ``)
+        pos = str.indexOf(rlS, pos) + 1
 
-        if (str.includes(`<@!`))
-            aux_snwflk = str
-                .slice(str.indexOf(`<@!`), str.indexOf(`>`))
-                .replace(`<@!`, ``)
+        let roleM = e.guild.roles.cache.find((r) => r.id === snwflk)
 
-        mention = interaction.client.users.cache.find(
-            (mention) => mention.id === aux_snwflk
-        )
-
-        if (str.includes(`<@&`)) {
-            aux_snwflk = str
-                .slice(str.indexOf(`<@&`), str.indexOf(`>`))
-                .replace(`<@&`, ``)
-
-            mention = interaction.client.guilds.cache
-                .find((guild) => guild.id === interaction.guild.id)
-                .roles.cache.find((role) => role.id === aux_snwflk)
+        if (roleM) {
+            str = str.replace(`${rlS.concat(snwflk)}>`, `{@&${roleM.name}}`)
+            pos = str.indexOf(`@${roleM.name}`, pos) + roleM.name.length + 1
         }
     }
 
-    return [mention, aux_snwflk]
-}
-
-/**
- *
- * @param {User || Role} mention
- * @param {String} str
- * @param {String} snw_flk Snowflake da menção
- * @return {String}
- */
-function subsMention(mention, str, snw_flk) {
-    if (str.includes(`<@`))
-        if (str.includes(`<@!`))
-            return str.replace(`<@!${snw_flk}>`, `@${mention.tag}`)
-    if (str.includes(`<@&`))
-        return str.replace(`<@&${snw_flk}>`, `@${mention.name}`)
-    else return str.replace(`<@${snw_flk}>`, `@${mention.tag}`)
-}
-
-/**
- *  Substitui todas as menções de uma string.
- * @param {String} str
- * @param {CommandInteraction} interaction
- * @return {String} String contendo nomes dos componentes das menções, no lugar de Snowflakes.
- */
-function subsAllMentions(str, interaction) {
-    let mention = SnowflakeUser(str, interaction)
-
-    if (mention.at(0))
-        return subsAllMentions(
-            subsMention(mention.at(0), str, mention.at(1)),
-            interaction
-        )
-
-    if (str.includes(`>`))
-        return (
-            str.slice(0, str.indexOf(`>`) + 1) +
-            subsAllMentions(
-                str.slice(str.indexOf(`>`) + 1, str.length),
-                interaction
+    pos = 0
+    while (str.includes(usrS, pos)) {
+        snwflk = str
+            .slice(
+                str.indexOf(usrS, pos),
+                str.indexOf(`>`, str.indexOf(usrS, pos))
             )
-        )
+            .replace(usrS, ``)
+        pos = str.indexOf(usrS, pos) + 1
+
+        console.log(pos)
+
+        let usrM = e.guild.members.cache.find((u) => u.id === snwflk)
+
+        if (usrM) {
+            str = str.replace(
+                `${usrS.concat(snwflk)}>`,
+                `{@${usrM.displayName}}`
+            )
+            pos =
+                str.indexOf(`@${usrM.displayName}`, pos) +
+                usrM.displayName.length +
+                1
+        }
+    }
+
+    pos = 0
+    while (str.includes(chS, pos)) {
+        snwflk = str
+            .slice(
+                str.indexOf(chS, pos),
+                str.indexOf(`>`, str.indexOf(chS, pos))
+            )
+            .replace(chS, ``)
+        pos = str.indexOf(chS, pos) + 1
+
+        let chM = e.guild.channels.cache.find((u) => u.id === snwflk)
+
+        if (chM) {
+            str = str.replace(`${chS.concat(snwflk)}>`, `{#${chM.name}}`)
+            pos = str.indexOf(`@${chM.name}`, pos) + chM.name.length + 1
+        }
+    }
 
     return str
 }
 
 module.exports = {
-    subsAllMentions,
+    mentionToName: mentionToName,
     random: random,
 }

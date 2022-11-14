@@ -1,8 +1,8 @@
 const { SlashCommandBuilder } = require(`@discordjs/builders`),
     { Colors } = require(`discord.js`),
-    { subsAllMentions, random } = require(`./Functions/commandFunctions.js`)
+    { mentionToName, random } = require(`./Functions/commandFunctions.js`)
 
-let cmdTxt = {
+let cmd = {
     name: `polvo`,
     desc: `O polvo decide qual a melhor entre duas opções (ele pode mudar de opinião).`,
     opt1: {
@@ -23,7 +23,7 @@ let cmdTxt = {
                 `A primeira opção era: #1\n` +
                 `A segunda opção era: #2\n` +
                 `MAS O 🐙 DECIDIU ESCOLHER A MELHOR ENTRE ELAS!`,
-            desc: `\nO :octopus: DECIDIU QUE NENHUMA DAS OPÇÕES É DIGNA!`,
+            none: `\nO 🐙 DECIDIU QUE NENHUMA DAS OPÇÕES É DIGNA!`,
             final: `\nA escolha do 🐙 é: #0!`,
         },
         images: [
@@ -39,10 +39,14 @@ let cmdTxt = {
             `https://c.tenor.com/-ANBMe4vEKEAAAAi/funder-the-sea-octopus.gif`,
             `https://c.tenor.com/CQOtdA2_8okAAAAC/squid_girl-squid.gif`,
             `https://c.tenor.com/uXDPbEULXtsAAAAM/squidward-handsome.gif`,
+            `https://media.tenor.com/r3nufeNFSKAAAAAC/wiggle-wiggles.gif`,
+            `https://media.tenor.com/PUv6MEdmjjsAAAAC/dance-octopus.gif`,
+
+            //another speacial one
             `https://c.tenor.com/dtwnYquTNhMAAAAS/sus-imposter.gif`,
         ],
     },
-    imgFmt: {
+    fmt: {
         size: 256,
         dynamic: true,
     },
@@ -50,54 +54,50 @@ let cmdTxt = {
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName(cmdTxt.name)
-        .setDescription(cmdTxt.desc)
-        .addStringOption((option) =>
-            option
-                .setName(cmdTxt.opt1.name)
-                .setDescription(cmdTxt.opt1.desc)
-                .setRequired(cmdTxt.opt1.req)
+        .setName(cmd.name)
+        .setDescription(cmd.desc)
+        .addStringOption((op) =>
+            op
+                .setName(cmd.opt1.name)
+                .setDescription(cmd.opt1.desc)
+                .setRequired(cmd.opt1.req)
         )
-        .addStringOption((option) =>
-            option
-                .setName(cmdTxt.opt2.name)
-                .setDescription(cmdTxt.opt2.desc)
-                .setRequired(cmdTxt.opt2.req)
+        .addStringOption((op) =>
+            op
+                .setName(cmd.opt2.name)
+                .setDescription(cmd.opt2.desc)
+                .setRequired(cmd.opt2.req)
         ),
 
-    async execute(interaction) {
+    async execute(e) {
         let midterm = Number(10)
 
         let octopus_choice = random(midterm * 2),
-            op1 = interaction.options.getString(cmdTxt.opt1.name),
-            op2 = interaction.options.getString(cmdTxt.opt2.name)
+            op1 = e.options.getString(cmd.opt1.name),
+            op2 = e.options.getString(cmd.opt2.name)
+        let str1 = mentionToName(op1, e),
+            str2 = mentionToName(op2, e)
 
-        let str1 = subsAllMentions(`${op1}`, interaction),
-            str2 = subsAllMentions(`${op2}`, interaction)
+        let op = cmd.emb.txt.opts.replace(`#1`, str1).replace(`#2`, str2),
+            guild = e.guild
 
-        let op = cmdTxt.emb.txt.opts.replace(`#1`, str1).replace(`#2`, str2)
+        let member = guild.members.cache.find((user) => user.id === e.user.id)
 
-        let guild = interaction.guild
-
-        let member = guild.members.cache.find(
-            (user) => user.id === interaction.user.id
-        )
-
-        let embed = {
+        let emb = {
             author: {
                 name: `${member.displayName} (${member.user.tag})`,
                 url: String(),
-                iconURL: member.displayAvatarURL(cmdTxt.imgFmt),
+                iconURL: member.displayAvatarURL(cmd.fmt),
                 proxyIconURL: String(),
             },
-            color: cmdTxt.emb.color,
+            color: cmd.emb.color,
             description: String(),
             footer: {
                 text: op,
-                iconURL: guild.iconURL(cmdTxt.imgFmt),
+                iconURL: guild.iconURL(cmd.fmt),
                 proxyIconURL: String(),
             },
-            hexColor: cmdTxt.emb.color,
+            hexColor: cmd.emb.color,
             image: {
                 url: String(),
                 proxyURL: String(),
@@ -112,7 +112,7 @@ module.exports = {
                 width: Number(),
             },
             timestamp: String(),
-            title: cmdTxt.emb.title.replace(`#0`, member.displayName),
+            title: cmd.emb.title.replace(`#0`, member.displayName),
             url: String(),
             video: {
                 url: String(),
@@ -122,24 +122,16 @@ module.exports = {
             },
         }
 
-        if (octopus_choice <= midterm)
-            if (octopus_choice === midterm) {
-                embed.description = cmdTxt.emb.txt.desc
-                embed.image.url = cmdTxt.emb.images.at(
-                    cmdTxt.emb.images.length - 1
-                )
-            } else {
-                embed.description = cmdTxt.emb.txt.final.replace(`#0`, op1)
-                embed.image.url = cmdTxt.emb.images.at(
-                    random(cmdTxt.emb.images.length - 2)
-                )
-            }
-        else {
-            embed.description = cmdTxt.emb.txt.final.replace(`#0`, op2)
-            embed.image.url = cmdTxt.emb.images.at(
-                random(cmdTxt.emb.images.length - 2)
-            )
+        if (octopus_choice < midterm) {
+            emb.description = cmd.emb.txt.final.replace(`#0`, op1)
+            emb.image.url = cmd.emb.images.at(random(cmd.emb.images.length - 2))
+        } else if (octopus_choice == midterm) {
+            emb.description = cmd.emb.txt.none
+            emb.image.url = cmd.emb.images.at(cmd.emb.images.length - 1)
+        } else {
+            emb.description = cmd.emb.txt.final.replace(`#0`, op2)
+            emb.image.url = cmd.emb.images.at(random(cmd.emb.images.length - 2))
         }
-        await interaction.reply({ embeds: [embed] })
+        await e.reply({ embeds: [emb] })
     },
 }

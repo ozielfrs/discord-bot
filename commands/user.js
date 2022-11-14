@@ -1,8 +1,7 @@
-const { SlashCommandBuilder } = require(`@discordjs/builders`),
-    { MessageEmbed } = require(`discord.js`)
+const { SlashCommandBuilder } = require(`@discordjs/builders`)
 
-let cmdTxt = {
-    locale: `pt-br`,
+let cmd = {
+    local: `pt-br`,
     name: `user`,
     desc: `Responde com a informação do usuário mencionado, ou do usuário que tiver usado o comando.`,
     opt: {
@@ -10,7 +9,7 @@ let cmdTxt = {
         desc: `Marque um usuário`,
         req: false,
     },
-    imgFmt: {
+    fmt: {
         size: 256,
         dynamic: true,
     },
@@ -18,68 +17,64 @@ let cmdTxt = {
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName(cmdTxt.name)
-        .setDescription(cmdTxt.desc)
-        .addUserOption((option) =>
-            option
-                .setName(cmdTxt.opt.name)
-                .setDescription(cmdTxt.opt.desc)
-                .setRequired(cmdTxt.opt.req)
+        .setName(cmd.name)
+        .setDescription(cmd.desc)
+        .addUserOption((op) =>
+            op
+                .setName(cmd.opt.name)
+                .setDescription(cmd.opt.desc)
+                .setRequired(cmd.opt.req)
         ),
 
-    async execute(interaction) {
-        let guild = interaction.guild
+    async execute(e) {
+        let guild = e.guild
 
         let mention
-        interaction.options.getUser(cmdTxt.opt.name)
+        e.options.getUser(cmd.opt.name)
             ? (mention = guild.members.cache.find(
-                  (user) =>
-                      user.id ===
-                      interaction.options.getUser(cmdTxt.opt.name).id
+                  (user) => user.id === e.options.getUser(cmd.opt.name).id
               ))
             : null,
-            (member = guild.members.cache.find(
-                (user) => user.id === interaction.user.id
-            ))
+            (member = guild.members.cache.find((user) => user.id === e.user.id))
 
-        let embed = {
+        let emb = {
             author: {
                 name: member.displayName,
                 url: String(),
-                iconURL: member.displayAvatarURL(cmdTxt.imgFmt),
+                iconURL: member.displayAvatarURL(cmd.fmt),
                 proxyIconURL: String(),
             },
             color: mention ? mention.displayColor : member.displayColor,
             description: `Conta criada em: ${
                 mention
-                    ? mention.user.createdAt.toLocaleString(cmdTxt.locale, {
+                    ? mention.user.createdAt.toLocaleString(cmd.local, {
                           timeZone: 'UTC',
                       })
-                    : member.user.createdAt.toLocaleString(cmdTxt.locale, {
+                    : member.user.createdAt.toLocaleString(cmd.local, {
                           timeZone: 'UTC',
                       })
             }.`,
             footer: {
                 text: `Pertence ao servidor desde: ${
                     mention
-                        ? mention.joinedAt.toLocaleString(cmdTxt.locale, {
+                        ? mention.joinedAt.toLocaleString(cmd.local, {
                               timeZone: 'UTC',
                           })
-                        : member.joinedAt.toLocaleString(cmdTxt.locale, {
+                        : member.joinedAt.toLocaleString(cmd.local, {
                               timeZone: 'UTC',
                           })
                 }\n`,
-                iconURL: guild.iconURL(cmdTxt.imgFmt),
+                iconURL: guild.iconURL(cmd.fmt),
                 proxyIconURL: String(),
             },
             hexColor: member.displayHexColor,
             image: {
                 url: mention
-                    ? mention.displayAvatarURL(cmdTxt.imgFmt)
-                    : member.displayAvatarURL(cmdTxt.imgFmt),
+                    ? mention.displayAvatarURL(cmd.fmt)
+                    : member.displayAvatarURL(cmd.fmt),
                 proxyURL: String(),
-                height: Number(256),
-                width: Number(256),
+                height: Number(),
+                width: Number(),
             },
             length: Number(),
             thumbnail: {
@@ -88,7 +83,7 @@ module.exports = {
                 height: Number(),
                 width: Number(),
             },
-            timestamp: interaction.createdAt,
+            timestamp: e.createdAt,
             title: `Informações de ${
                 mention ? mention.displayName : member.displayName
             } (${mention ? mention.user.tag : member.user.tag})`,
@@ -101,6 +96,6 @@ module.exports = {
             },
         }
 
-        await interaction.reply({ embeds: [embed] })
+        await e.reply({ embeds: [emb] })
     },
 }

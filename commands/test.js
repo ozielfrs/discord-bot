@@ -1,35 +1,36 @@
 const { SlashCommandBuilder } = require(`@discordjs/builders`)
 
+let cmd = {
+    local: `pt-br`,
+    name: `test`,
+    desc: `Mensagem de teste...`,
+    fmt: {
+        size: 256,
+        dynamic: true,
+    },
+}
+
 module.exports = {
-    data: new SlashCommandBuilder()
-        .setName(`test`)
-        .setDescription(`Comando de teste...`),
+    data: new SlashCommandBuilder().setName(cmd.name).setDescription(cmd.desc),
 
-    async execute(interaction) {
-        let guild = interaction.guild
-        let member = guild.members.cache.find(
-            (user) => user.id === interaction.user.id
-        )
+    async execute(e) {
+        let guild = e.guild
+        let member = guild.members.cache.find((user) => user.id === e.user.id)
 
-        let embed = {
+        let emb = {
             author: {
                 name: member.displayName,
                 url: String(),
-                iconURL: member.displayAvatarURL({
-                    dynamic: true,
-                }),
+                iconURL: member.displayAvatarURL(cmd.fmt),
                 proxyIconURL: String(),
             },
             color: member.displayColor,
             description: `Embed for testing`,
             footer: {
-                text: `Sample Text`,
-                iconURL: guild.iconURL({
-                    dynamic: true,
-                }),
+                text: guild.name,
+                iconURL: guild.iconURL(cmd.fmt),
                 proxyIconURL: String(),
             },
-            hexColor: member.displayHexColor,
             image: {
                 url: String(),
                 proxyURL: String(),
@@ -54,8 +55,8 @@ module.exports = {
             },
         }
 
-        await interaction.reply({
-            embeds: [embed],
+        await e.reply({
+            embeds: [emb],
         })
     },
 }
