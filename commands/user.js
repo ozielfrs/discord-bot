@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require(`@discordjs/builders`),
-    { CommandInteraction } = require('discord.js'),
+    { CommandInteraction, Collection } = require('discord.js'),
     { badgesFromDisc } = require(`../function/bagdes/discordBadges`)
 
 let cmd = {
@@ -43,7 +43,7 @@ module.exports = {
             fields = [
                 {
                     inline: true,
-                    name: String(`Conta criada:`),
+                    name: String(`Conta criada`),
                     value: String(
                         `<t:${(
                             mention.user.createdTimestamp * 1e-3
@@ -52,24 +52,34 @@ module.exports = {
                 },
                 {
                     inline: true,
-                    name: String(`Pertence ao servidor:`),
+                    name: String(`Pertence ao servidor`),
                     value: String(
                         `<t:${(mention.joinedTimestamp * 1e-3).toFixed()}:R>`
                     ),
                 },
                 {
                     inline: true,
-                    name: String(`ID:`),
+                    name: String(`ID`),
                     value: String(mention.user.id),
                 },
             ]
 
         let badges = mention.user.flags.toArray(),
+            roles = [String()],
             badgesField = {
                 inline: true,
-                name: String(`Flags:`),
+                name: String(`Distintivos`),
+                value: String(`🌌 Working on it`),
+            },
+            rolesField = {
+                inline: true,
+                name: String(`Cargos`),
                 value: String(`🌌 Working on it`),
             }
+
+        mention.roles.cache.forEach((r) => {
+            if (r.name != `@everyone`) roles.push(`<@&${r.id}>`)
+        })
 
         if (badges.length != 0) {
             badgesField.value = badges
@@ -78,9 +88,13 @@ module.exports = {
                         (val = badgesFromDisc.find((e) => e.name === val).emoji)
                 )
                 .join(` `)
+            fields.push(badgesField)
         }
 
-        fields.push(badgesField)
+        if (roles.length != 0) {
+            rolesField.value = roles.join(` `).slice(1)
+            fields.push(rolesField)
+        }
 
         let emb = {
             author: {
