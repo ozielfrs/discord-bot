@@ -1,5 +1,5 @@
 node_modules
 #All .json files.
-/function/img
+*commands/function/img
 /*.json
 /*.prettierrc
