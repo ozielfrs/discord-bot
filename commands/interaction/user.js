@@ -25,7 +25,7 @@ module.exports = {
 			op
 				.setName(cmd.opt.name)
 				.setDescription(cmd.opt.desc)
-				.setRequired(cmd.opt.req),
+				.setRequired(cmd.opt.req)
 		),
 
 	/**
@@ -37,7 +37,7 @@ module.exports = {
 
 		let mention = e.options.getUser(cmd.opt.name)
 				? guild.members.cache.find(
-						user => user.id === e.options.getUser(cmd.opt.name).id,
+						user => user.id === e.options.getUser(cmd.opt.name).id
 				  )
 				: guild.members.cache.find(u => u.id === e.member.id),
 			fields = [

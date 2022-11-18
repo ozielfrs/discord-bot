@@ -30,7 +30,7 @@ const rest = new REST({ version: `10` }).setToken(token)
 				body: cmds,
 			})
 			console.log(
-				`Successfully reloaded ${d.length} application (/) commands in ${g}.`,
+				`Successfully reloaded ${d.length} application (/) commands in ${g}.`
 			)
 		}
 	} catch (err) {

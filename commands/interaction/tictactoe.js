@@ -7,8 +7,9 @@ const {
 		ComponentType,
 		TextInputStyle,
 		ModalSubmitInteraction,
+		Message,
 	} = require(`discord.js`),
-	{ customIds } = require(`../../events/interactionCreate`),
+	{ customIds, maxT } = require(`../../events/interactionCreate`),
 	wait = require('node:timers/promises').setTimeout
 
 let cmd = {
@@ -35,7 +36,7 @@ module.exports = {
 			op
 				.setName(cmd.opt.name)
 				.setDescription(cmd.opt.desc)
-				.setRequired(cmd.opt.req),
+				.setRequired(cmd.opt.req)
 		),
 
 	/**
@@ -46,7 +47,7 @@ module.exports = {
 		let guild = e.guild
 		let member = guild.members.cache.find(u => u.id === e.member.id),
 			mention = guild.members.cache.find(
-				u => u.id === e.options.getUser(cmd.opt.name).id,
+				u => u.id === e.options.getUser(cmd.opt.name).id
 			)
 
 		/* if (member.id == mention.id){
@@ -76,7 +77,7 @@ module.exports = {
 						},
 						{
 							inline: false,
-							name: `Rodada atual`,
+							name: `Fim <t:${((Date.now() + maxT) * 1e-3).toFixed()}:R>`,
 							value: `Jogador 2`,
 						},
 					],
@@ -110,7 +111,14 @@ module.exports = {
 					type: ComponentType.ActionRow,
 				}
 
-			await e.reply({ embeds: [emb], components: [actRow] })
+			await e
+				.reply({ embeds: [emb], components: [actRow] })
+				.then(
+					async () =>
+						await wait(maxT).then(
+							async () => await e.fetchReply().then(msg => this.end(msg))
+						)
+				)
 		} else {
 			await e.reply({
 				content: `Você deve jogar com um usuário do servidor! ;).`,
@@ -121,27 +129,26 @@ module.exports = {
 
 	/**
 	 *
-	 * @param {ButtonInteraction | ModalSubmitInteraction} e
+	 * @param { Message } e
 	 */
 	async end(e) {
-		let actRow = e.message.components.at(0).toJSON(),
-			emb = e.message.embeds.at(0).toJSON()
+		let actRow = e.components.map(comp => comp.toJSON()),
+			emb = e.embeds.map(emb => emb.toJSON())
 
-		if (emb.title) {
-			emb.title += ' ' + `(Encerrado)`
+		actRow.forEach(row => {
+			row.components.forEach(btn => {
+				btn.disabled = true
+				btn.style = ButtonStyle.Secondary
+			})
+		})
+
+		emb.forEach(emb => {
+			emb.title ? (emb.title += ' (Encerrado)') : false
+		})
+
+		if (e.editable) {
+			await e.edit({ embeds: emb, components: actRow })
 		}
-
-		actRow.components.map(btn => {
-			btn.disabled = true
-			btn.style = ButtonStyle.Secondary
-		})
-
-		await e.deferUpdate()
-		await wait(1e3)
-		await e.editReply({
-			embeds: [emb],
-			components: [actRow],
-		})
 	},
 
 	/**
@@ -151,10 +158,10 @@ module.exports = {
 	async modal(e) {
 		let playerName = e.message.embeds.at(0).fields.at(2).value,
 			pos = e.fields.getTextInputValue(
-				`${customIds.gamesId}tictactoe${customIds.modalId}${customIds.txtInId}`,
+				`${customIds.gamesId}tictactoe${customIds.modalId}${customIds.txtInId}`
 			),
 			emojiStrings = [`1️⃣`, `2️⃣`, `3️⃣`, `4️⃣`, `5️⃣`, `6️⃣`, `7️⃣`, `8️⃣`, `9️⃣`],
-			winner = false,
+			winner = true,
 			playerEmoji = `🟥`,
 			specEmoji = `🟩`
 
@@ -178,7 +185,7 @@ module.exports = {
 			if (pos in free) {
 				emb.description = emb.description.replace(
 					free[parseInt(pos)],
-					`${playerEmoji}`,
+					`${playerEmoji}`
 				)
 
 				let actRow = e.message.components.at(0).toJSON(),
@@ -241,28 +248,26 @@ module.exports = {
 					emb.thumbnail.url = member.displayAvatarURL()
 					actRow.components.at(0).label = `Vez do ${playerName}`
 				}
-
 				if (winner) {
 					emb.color = member.displayColor
 					emb.description = `🏆 <@${playerId}> venceu!\n\n` + emb.description
-					actRow.components.map(btn => {
-						btn.disabled = true
-						btn.style = ButtonStyle.Secondary
-					})
 				} else if (drawn) {
 					emb.description = `👵 Deu velha!\n\n` + emb.description
-					actRow.components.map(btn => {
-						btn.disabled = true
-						btn.style = ButtonStyle.Secondary
-					})
 				}
 
-				await e.deferUpdate()
-				await wait(1e3)
-				await e.editReply({
-					embeds: [emb],
-					components: [actRow],
-				})
+				await e
+					.deferUpdate()
+					.then(async res => {
+						return await res.interaction.editReply({
+							embeds: [emb],
+							components: [actRow],
+						})
+					})
+					.then(async res => {
+						if (winner || drawn) {
+							this.end(res)
+						}
+					})
 			}
 		}
 	},

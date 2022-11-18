@@ -61,14 +61,14 @@ module.exports = {
 				.setName(cmd.opt1.name)
 				.setDescription(cmd.opt1.desc)
 				.setRequired(cmd.opt1.req)
-				.setMaxLength(cmd.strmax),
+				.setMaxLength(cmd.strmax)
 		)
 		.addStringOption(op =>
 			op
 				.setName(cmd.opt2.name)
 				.setDescription(cmd.opt2.desc)
 				.setRequired(cmd.opt2.req)
-				.setMaxLength(cmd.strmax),
+				.setMaxLength(cmd.strmax)
 		),
 
 	/**
