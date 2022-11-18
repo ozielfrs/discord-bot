@@ -56,12 +56,17 @@ module.exports = {
 					name: `ID`,
 					value: mention.user.id,
 				},
+				{
+					inline: true,
+					name: `Usuário`,
+					value: `<@${mention.user.id}>`,
+				},
 			]
 
 		let badges = mention.user.flags.toArray(),
 			roles = [],
 			badgesField = {
-				inline: false,
+				inline: true,
 				name: `Distintivos`,
 				value: `🌌 Working on it`,
 			},
@@ -83,7 +88,7 @@ module.exports = {
 		}
 
 		if (roles.length != 0) {
-			rolesField.value = roles.join(` `).slice(1)
+			rolesField.value = roles.join(` `)
 			fields.push(rolesField)
 		}
 

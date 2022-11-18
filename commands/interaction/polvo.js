@@ -103,6 +103,9 @@ module.exports = {
 					value: op2,
 				},
 			],
+			image: {
+				url: String(),
+			},
 			footer: {
 				text: cmd.emb.txt.dec,
 				icon_url: guild.iconURL(),
