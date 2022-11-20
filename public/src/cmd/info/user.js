@@ -1,9 +1,8 @@
-const { SlashCommandBuilder } = require(`@discordjs/builders`),
+const { SlashCommandSubcommandBuilder } = require(`@discordjs/builders`),
 	{ CommandInteraction } = require('discord.js'),
-	{ discordBadges } = require(`../function/bagdes/discordBadges`)
+	{ discordBadges } = require(`../../func/utils/badges`)
 
 let cmd = {
-	local: `pt-br`,
 	name: `user`,
 	desc: `Responde com a informação do usuário mencionado, ou do usuário que tiver usado o comando.`,
 	opt: {
@@ -18,7 +17,7 @@ let cmd = {
 }
 
 module.exports = {
-	data: new SlashCommandBuilder()
+	data: new SlashCommandSubcommandBuilder()
 		.setName(cmd.name)
 		.setDescription(cmd.desc)
 		.addUserOption(op =>
@@ -68,12 +67,12 @@ module.exports = {
 			badgesField = {
 				inline: true,
 				name: `Distintivos`,
-				value: `🌌 Working on it`,
+				value: String(),
 			},
 			rolesField = {
 				inline: false,
 				name: `Cargos`,
-				value: `🌌 Working on it`,
+				value: String(),
 			}
 
 		mention.roles.cache.forEach(r => {

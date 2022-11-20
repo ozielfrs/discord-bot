@@ -1,5 +1,4 @@
-const { BaseInteraction } = require('discord.js'),
-	wait = require('node:timers/promises').setTimeout
+const { BaseInteraction } = require('discord.js')
 
 module.exports = {
 	name: `interactionCreate`,
@@ -21,7 +20,9 @@ module.exports = {
 	 */
 	async execute(e) {
 		if (e.isCommand()) {
-			let command = e.client.interactions.get(e.commandName)
+			let command = e.client[`${e.commandName}`].get(
+				`${e.commandName} ${e.options._subcommand}`
+			)
 
 			if (command) {
 				try {
@@ -29,7 +30,7 @@ module.exports = {
 				} catch (error) {
 					console.error(error)
 					await e.reply({
-						content: `Tried to execute ${e.commandName} and it didn't work.`,
+						content: `Tried to execute [${e.commandName} ${e.options._subcommand}] and it didn't work.`,
 						ephemeral: true,
 					})
 				}
@@ -41,9 +42,10 @@ module.exports = {
 				customIds = this.customIds
 			if (ID.includes(customIds.gamesId)) {
 				if (ID.includes(customIds.updateId)) {
-					let command = e.client.interactions.get(
-						ID.slice(customIds.gamesId.length, -customIds.updateId.length)
-					)
+					let commandName = `${customIds.gamesId.slice(1, -1)}`,
+						subName = ID.slice(customIds.gamesId.length, -customIds.updateId.length)
+
+					let command = e.client[commandName].get(`${commandName} ${subName}`)
 
 					if (command) {
 						let player =
@@ -67,7 +69,7 @@ module.exports = {
 							} catch (error) {
 								console.error(error)
 								await e.reply({
-									content: `An error occured while playing.`,
+									content: `An error occured while playing [${commandName} ${subName}].`,
 									ephemeral: true,
 								})
 							}
@@ -76,9 +78,11 @@ module.exports = {
 				}
 
 				if (ID.includes(customIds.endId)) {
-					let command = e.client.interactions.get(
-						ID.slice(customIds.gamesId.length, -customIds.endId.length)
-					)
+					let commandName = `${customIds.gamesId.slice(1, -1)}`,
+						subName = ID.slice(customIds.gamesId.length, -customIds.endId.length)
+
+					let command = e.client[commandName].get(`${commandName} ${subName}`)
+
 					if (command) {
 						let player = false
 
@@ -96,7 +100,7 @@ module.exports = {
 							} catch (error) {
 								console.error(error)
 								await e.reply({
-									content: `An error occured when trying to execute this button.`,
+									content: `An error occured when trying to execute this button [${commandName} ${subName}].`,
 									ephemeral: true,
 								})
 							}
@@ -111,19 +115,18 @@ module.exports = {
 				customIds = this.customIds
 			if (ID.includes(customIds.gamesId)) {
 				if (ID.includes(customIds.modalId)) {
-					let command = e.client.interactions.get(
-						ID.slice(customIds.gamesId.length, -customIds.modalId.length)
-					)
+					let commandName = `${customIds.gamesId.slice(1, -1)}`,
+						subName = ID.slice(customIds.gamesId.length, -customIds.modalId.length)
+
+					let command = e.client[commandName].get(`${commandName} ${subName}`)
+
 					if (command) {
 						try {
 							await command.modal(e)
 						} catch (error) {
 							console.error(error)
 							await e.reply({
-								content: `Tried to execute ${ID.slice(
-									customIds.gamesId.length,
-									-customIds.modalId.length
-								)} and it didn't work.`,
+								content: `Tried to execute [${commandName} ${subName}] and it didn't work.`,
 								ephemeral: true,
 							})
 						}

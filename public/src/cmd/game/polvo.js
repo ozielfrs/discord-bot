@@ -1,6 +1,6 @@
-const { SlashCommandBuilder } = require(`@discordjs/builders`),
+const { SlashCommandSubcommandBuilder } = require(`@discordjs/builders`),
 	{ CommandInteraction, Colors } = require(`discord.js`),
-	{ random } = require(`../function/cmdAux`)
+	{ random } = require(`../../func/func`)
 
 let cmd = {
 	name: `polvo`,
@@ -53,7 +53,7 @@ let cmd = {
 }
 
 module.exports = {
-	data: new SlashCommandBuilder()
+	data: new SlashCommandSubcommandBuilder()
 		.setName(cmd.name)
 		.setDescription(cmd.desc)
 		.addStringOption(op =>

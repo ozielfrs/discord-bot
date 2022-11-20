@@ -1,44 +1,66 @@
-const { Client, Events, GatewayIntentBits, Collection } = require(`discord.js`),
-	{ token } = require(`./config.json`),
-	fs = require('node:fs')
+const confPath = `./private/conf/config.json`
 
-const c = new Client({ intents: [GatewayIntentBits.Guilds] }) //Client for Bot
+const { Client, GatewayIntentBits, Collection } = require(`discord.js`),
+	{ token } = require(confPath),
+	fs = require(`node:fs`)
 
-c.once(Events.ClientReady, c => {
-	console.log(`Ready! Logged in as ${c.user.tag}`)
+const CLI = new Client({ intents: GatewayIntentBits.Guilds })
+
+/**
+ * Path for commands and commands array
+ */
+const cmdPath = fs
+	.readdirSync(`./public/src/cmd`, { withFileTypes: true })
+	.filter(dirent => dirent.isDirectory())
+	.map(dirent => dirent.name)
+
+/**
+ * Find and add subcommands
+ */
+cmdPath.forEach(file => {
+	CLI[`${file}`] = new Collection()
+
+	const subCommandFiles = fs
+		.readdirSync(`./public/src/cmd/${file}`)
+		.filter(sub => sub.endsWith(`.js`) && !sub.includes(`${file}`))
+
+	console.log(file, subCommandFiles)
+
+	subCommandFiles.forEach(fileName => {
+		let command = require(`./public/src/cmd/${file}/${fileName}`)
+
+		CLI[`${file}`].set(`${file} ${command.data.name}`, command)
+	})
 })
 
-c.interactions = new Collection()
-c.moderation = new Collection()
+let eventFiles = fs
+	.readdirSync(`./public/src/event`)
+	.filter(file => file.endsWith(`.js`))
 
-const commandInteractions = fs
-		.readdirSync(`./commands/interaction/`)
-		.filter(file => file.endsWith(`.js`)), // Interaction Command Files
-	commandModeration = fs
-		.readdirSync(`./commands/moderation/`)
-		.filter(file => file.endsWith(`.js`)), // Moderation Command Files
-	eF = fs.readdirSync(`./events`).filter(file => file.endsWith(`.js`)) //Event Handling Files
-
-//f for files
-for (const f of commandInteractions) {
-	let command = require(`./commands/interaction/${f}`)
-	console.log(command.data.name)
-	c.interactions.set(command.data.name, command)
-}
-
-for (const f of commandModeration) {
-	let command = require(`./commands/moderation/${f}`)
-	console.log(command.data.name)
-	c.moderation.set(command.data.name, command)
-}
-
-for (const f of eF) {
-	let e = require(`./events/${f}`)
+for (const file of eventFiles) {
+	let e = require(`./public/src/event/${file}`)
 	if (e.once) {
-		c.once(e.name, (...args) => e.execute(...args))
+		CLI.once(e.name, (...args) => e.execute(...args))
 	} else {
-		c.on(e.name, (...args) => e.execute(...args))
+		CLI.on(e.name, (...args) => e.execute(...args))
 	}
 }
 
-c.login(token)
+CLI.login(token)
+	.then(() => {
+		console.log(`Updating guilds list...`)
+		let conf = JSON.parse(fs.readFileSync(confPath))
+
+		conf.GuildIDs = []
+		CLI.guilds.cache.forEach(guild => {
+			if (!(guild.id in conf.blockedGuildIDs)) conf.GuildIDs.push(guild.id)
+		})
+
+		fs.writeFileSync(confPath, JSON.stringify(conf))
+
+		console.log(`Guilds list updated.`)
+	})
+	.then(() => {
+		console.log(`Bot started, ${CLI.user.tag}.`)
+	})
+	.catch(err => console.error(err))

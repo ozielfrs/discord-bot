@@ -1,5 +1,5 @@
 const {
-		SlashCommandBuilder,
+		SlashCommandSubcommandBuilder,
 		Colors,
 		CommandInteraction,
 		ButtonInteraction,
@@ -9,11 +9,10 @@ const {
 		ModalSubmitInteraction,
 		Message,
 	} = require(`discord.js`),
-	{ customIds, maxT } = require(`../../events/interactionCreate`),
+	{ customIds, maxT } = require(`../../event/interactionCreate`),
 	wait = require('node:timers/promises').setTimeout
 
 let cmd = {
-	local: `pt-br`,
 	name: `tictactoe`,
 	desc: `Use para jogar jogo da velha com algum usuário`,
 	opt: {
@@ -29,7 +28,7 @@ let cmd = {
 }
 
 module.exports = {
-	data: new SlashCommandBuilder()
+	data: new SlashCommandSubcommandBuilder()
 		.setName(cmd.name)
 		.setDescription(cmd.desc)
 		.addUserOption(op =>
@@ -51,10 +50,10 @@ module.exports = {
 			)
 
 		/* if (member.id == mention.id){
-            await e.reply({
-                content: `Você não pode jogar contigo mesmo, mas pode qualquer usuário do servidor! ;).`,
-                ephemeral: true,
-            })} */
+							await e.reply({
+									content: `Você não pode jogar contigo mesmo, mas pode qualquer usuário do servidor! ;).`,
+									ephemeral: true,
+							})} */
 		if (mention && !mention.user.bot) {
 			let emb = {
 					color: cmd.color,
