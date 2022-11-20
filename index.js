@@ -17,19 +17,19 @@ const cmdPath = fs
 /**
  * Find and add subcommands
  */
-cmdPath.forEach(file => {
-	CLI[`${file}`] = new Collection()
+cmdPath.forEach(dirName => {
+	CLI[`${dirName}`] = new Collection()
 
 	const subCommandFiles = fs
-		.readdirSync(`./public/src/cmd/${file}`)
-		.filter(sub => sub.endsWith(`.js`) && !sub.includes(`${file}`))
+		.readdirSync(`./public/src/cmd/${dirName}`)
+		.filter(sub => sub.endsWith(`.js`) && !sub.includes(`${dirName}`))
 
-	console.log(file, subCommandFiles)
+	console.log(dirName, subCommandFiles)
 
 	subCommandFiles.forEach(fileName => {
-		let command = require(`./public/src/cmd/${file}/${fileName}`)
+		let command = require(`./public/src/cmd/${dirName}/${fileName}`)
 
-		CLI[`${file}`].set(`${file} ${command.data.name}`, command)
+		CLI[`${dirName}`].set(`${dirName} ${command.data.name}`, command)
 	})
 })
 

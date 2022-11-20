@@ -1,6 +1,11 @@
 const { REST } = require(`@discordjs/rest`),
 	{ Routes } = require(`discord-api-types/v10`),
-	{ cliID, GuildIDs, token } = require(`./private/conf/config.json`),
+	{
+		cliID,
+		blockedGuildIDs,
+		GuildIDs,
+		token,
+	} = require(`./private/conf/config.json`),
 	fs = require(`node:fs`)
 
 /**
@@ -41,13 +46,16 @@ const rest = new REST({ version: `10` }).setToken(token)
 		console.log(`Started refreshing ${commands.length} application (/) commands.`)
 
 		for (const guild of GuildIDs) {
-			const req = await rest.put(Routes.applicationGuildCommands(cliID, guild), {
-				body: commands,
-			})
+			let req
+			if (!(guild in blockedGuildIDs)) {
+				req = await rest.put(Routes.applicationGuildCommands(cliID, guild), {
+					body: commands,
+				})
 
-			console.log(
-				`Successfully reloaded ${req.length} application (/) commands in ${guild}.`
-			)
+				console.log(
+					`Successfully reloaded ${req.length} application (/) commands in ${guild}.`
+				)
+			}
 		}
 	} catch (err) {
 		console.error(err)
