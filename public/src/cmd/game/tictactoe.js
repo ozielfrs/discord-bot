@@ -8,6 +8,7 @@ const {
 		TextInputStyle,
 		ModalSubmitInteraction,
 		Message,
+		userMention,
 	} = require(`discord.js`),
 	{ customIds, maxT } = require(`../../event/interactionCreate`),
 	wait = require('node:timers/promises').setTimeout
@@ -20,11 +21,7 @@ let cmd = {
 		desc: `Marque um usuário`,
 		req: true,
 	},
-	fmt: {
-		size: 256,
-		dynamic: true,
-	},
-	color: Colors.Blue,
+	color: Colors.Blurple,
 }
 
 module.exports = {
@@ -44,35 +41,32 @@ module.exports = {
 	 */
 	async execute(e) {
 		let guild = e.guild
-		let member = guild.members.cache.find(u => u.id === e.member.id),
+		let member = guild.members.cache.find(m => m.id === e.member.id),
 			mention = guild.members.cache.find(
-				u => u.id === e.options.getUser(cmd.opt.name).id
+				m => m.id === e.options.getUser(cmd.opt.name).id
 			)
 
-		/* if (member.id == mention.id){
-							await e.reply({
-									content: `Você não pode jogar contigo mesmo, mas pode qualquer usuário do servidor! ;).`,
-									ephemeral: true,
-							})} */
 		if (mention && !mention.user.bot) {
 			let emb = {
 					color: cmd.color,
 					description:
-						`1️⃣⬜2️⃣⬜3️⃣\n` +
-						`⬜⬜⬜⬜⬜\n` +
-						`4️⃣⬜5️⃣⬜6️⃣\n` +
-						`⬜⬜⬜⬜⬜\n` +
-						`7️⃣⬜8️⃣⬜9️⃣`,
+						`⬛⬛⬛⬛⬛⬛⬛\n` +
+						`⬛1️⃣⬛2️⃣⬛3️⃣⬛\n` +
+						`⬛⬛⬛⬛⬛⬛⬛\n` +
+						`⬛4️⃣⬛5️⃣⬛6️⃣⬛\n` +
+						`⬛⬛⬛⬛⬛⬛⬛\n` +
+						`⬛7️⃣⬛8️⃣⬛9️⃣⬛\n` +
+						`⬛⬛⬛⬛⬛⬛⬛\n`,
 					fields: [
 						{
 							inline: true,
 							name: `Jogador 1`,
-							value: `<@${member.id}>`,
+							value: userMention(member.id),
 						},
 						{
 							inline: true,
 							name: `Jogador 2`,
-							value: `<@${mention.id}>`,
+							value: userMention(mention.id),
 						},
 						{
 							inline: false,
@@ -114,15 +108,24 @@ module.exports = {
 				.reply({ embeds: [emb], components: [actRow] })
 				.then(
 					async () =>
-						await wait(maxT).then(
-							async () => await e.fetchReply().then(msg => this.end(msg))
-						)
+						await wait(maxT)
+							.then(
+								async () =>
+									await e
+										.fetchReply()
+										.then(msg => this.end(msg))
+										.catch(err => console.error(err))
+							)
+							.catch(err => console.error(err))
 				)
+				.catch(err => console.error(err))
 		} else {
-			await e.reply({
-				content: `Você deve jogar com um usuário do servidor! ;).`,
-				ephemeral: true,
-			})
+			await e
+				.reply({
+					content: `Você deve jogar com um usuário do servidor! ;).`,
+					ephemeral: true,
+				})
+				.catch(err => console.error(err))
 		}
 	},
 
@@ -146,7 +149,9 @@ module.exports = {
 		})
 
 		if (e.editable) {
-			await e.edit({ embeds: emb, components: actRow })
+			await e
+				.edit({ embeds: emb, components: actRow })
+				.catch(err => console.error(err))
 		}
 	},
 
@@ -161,8 +166,8 @@ module.exports = {
 			),
 			emojiStrings = [`1️⃣`, `2️⃣`, `3️⃣`, `4️⃣`, `5️⃣`, `6️⃣`, `7️⃣`, `8️⃣`, `9️⃣`],
 			winner = false,
-			playerEmoji = `🟥`,
-			specEmoji = `🟩`
+			playerEmoji = `❎`,
+			specEmoji = `🅾`
 
 		if (playerName == `Jogador 2`) {
 			let aux = playerEmoji
@@ -191,8 +196,8 @@ module.exports = {
 					lock = []
 
 				let opts = emb.description
-						.split(`⬜`)
-						.filter(val => val != ``)
+						.split(`⬛`)
+						.filter(val => val.length != 0 && val != '' && val != '\n')
 						.map(str => (str = str.replace(`\n`, ``))),
 					val1 = 5,
 					val2 = 3
@@ -249,7 +254,8 @@ module.exports = {
 				}
 				if (winner) {
 					emb.color = member.displayColor
-					emb.description = `🏆 <@${playerId}> venceu!\n\n` + emb.description
+					emb.description =
+						`🏆 ${userMention(playerId)} venceu!\n\n` + emb.description
 				} else if (drawn) {
 					emb.description = `👵 Deu velha!\n\n` + emb.description
 				}
@@ -267,6 +273,7 @@ module.exports = {
 							this.end(res)
 						}
 					})
+					.catch(err => console.error(err))
 			}
 		}
 	},
@@ -297,6 +304,6 @@ module.exports = {
 			title: `Sua vez de jogar`,
 		}
 
-		await e.showModal(modal)
+		await e.showModal(modal).catch(err => console.error(err))
 	},
 }

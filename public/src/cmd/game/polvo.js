@@ -1,4 +1,7 @@
-const { SlashCommandSubcommandBuilder } = require(`@discordjs/builders`),
+const {
+		SlashCommandSubcommandBuilder,
+		userMention,
+	} = require(`@discordjs/builders`),
 	{ CommandInteraction, Colors } = require(`discord.js`),
 	{ random } = require(`../../func/func`)
 
@@ -83,11 +86,11 @@ module.exports = {
 			op2 = e.options.getString(cmd.opt2.name),
 			guild = e.guild
 
-		let member = guild.members.cache.find(u => u.id === e.member.id)
+		let member = guild.members.cache.find(m => m.id === e.member.id)
 
 		let emb = {
 			author: {
-				name: `${member.displayName} (${member.user.tag})`,
+				name: `${member.displayName}`,
 				icon_url: member.displayAvatarURL(),
 			},
 			color: cmd.emb.color,
@@ -101,6 +104,11 @@ module.exports = {
 					inline: true,
 					name: cmd.emb.txt.opt2,
 					value: op2,
+				},
+				{
+					inline: false,
+					name: `Jogador`,
+					value: userMention(member.id),
 				},
 			],
 			image: {
@@ -125,6 +133,6 @@ module.exports = {
 			emb.image.url = cmd.emb.images.at(random(cmd.emb.images.length - 2))
 		}
 
-		await e.reply({ embeds: [emb] })
+		await e.reply({ embeds: [emb] }).catch(err => console.error(err))
 	},
 }

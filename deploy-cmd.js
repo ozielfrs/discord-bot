@@ -48,9 +48,11 @@ const rest = new REST({ version: `10` }).setToken(token)
 		for (const guild of GuildIDs) {
 			let req
 			if (!(guild in blockedGuildIDs)) {
-				req = await rest.put(Routes.applicationGuildCommands(cliID, guild), {
-					body: commands,
-				})
+				req = await rest
+					.put(Routes.applicationGuildCommands(cliID, guild), {
+						body: commands,
+					})
+					.catch(err => console.error(err))
 
 				console.log(
 					`Successfully reloaded ${req.length} application (/) commands in ${guild}.`

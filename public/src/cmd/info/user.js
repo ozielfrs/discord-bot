@@ -1,10 +1,16 @@
-const { SlashCommandSubcommandBuilder } = require(`@discordjs/builders`),
+const {
+		SlashCommandSubcommandBuilder,
+		time,
+		TimestampStyles,
+		userMention,
+		roleMention,
+	} = require(`@discordjs/builders`),
 	{ CommandInteraction } = require('discord.js'),
 	{ discordBadges } = require(`../../func/utils/badges`)
 
 let cmd = {
 	name: `user`,
-	desc: `Responde com a informação do usuário mencionado, ou do usuário que tiver usado o comando.`,
+	desc: `Responde com informações do usuário`,
 	opt: {
 		name: `mention`,
 		desc: `Marque um usuário`,
@@ -35,20 +41,18 @@ module.exports = {
 		let guild = e.guild
 
 		let mention = e.options.getUser(cmd.opt.name)
-				? guild.members.cache.find(
-						user => user.id === e.options.getUser(cmd.opt.name).id
-				  )
-				: guild.members.cache.find(u => u.id === e.member.id),
+				? guild.members.cache.find(m => m.id === e.options.getUser(cmd.opt.name).id)
+				: guild.members.cache.find(m => m.id === e.member.id),
 			fields = [
 				{
 					inline: true,
 					name: `Conta criada`,
-					value: `<t:${(mention.user.createdTimestamp * 1e-3).toFixed()}:R>`,
+					value: time(mention.user.createdAt, TimestampStyles.RelativeTime),
 				},
 				{
 					inline: true,
 					name: `Pertence ao servidor`,
-					value: `<t:${(mention.joinedTimestamp * 1e-3).toFixed()}:R>`,
+					value: time(mention.joinedAt, TimestampStyles.RelativeTime),
 				},
 				{
 					inline: false,
@@ -58,7 +62,7 @@ module.exports = {
 				{
 					inline: true,
 					name: `Usuário`,
-					value: `<@${mention.user.id}>`,
+					value: userMention(mention.user.id),
 				},
 			]
 
@@ -76,12 +80,12 @@ module.exports = {
 			}
 
 		mention.roles.cache.forEach(r => {
-			if (r.name != `@everyone`) roles.push(`<@&${r.id}>`)
+			if (r.name != `@everyone`) roles.push(roleMention(r.id))
 		})
 
 		if (badges.length != 0) {
 			badgesField.value = badges
-				.map(val => (val = discordBadges.find(e => e.name === val).emoji))
+				.map(b => (b = discordBadges.find(e => e.name === b).emoji))
 				.join(` `)
 			fields.push(badgesField)
 		}
@@ -108,6 +112,6 @@ module.exports = {
 			timestamp: new Date().toISOString(),
 		}
 
-		await e.reply({ embeds: [emb] })
+		await e.reply({ embeds: [emb] }).catch(err => console.error(err))
 	},
 }

@@ -29,10 +29,12 @@ module.exports = {
 					await command.execute(e)
 				} catch (error) {
 					console.error(error)
-					await e.reply({
-						content: `Tried to execute [${e.commandName} ${e.options._subcommand}] and it didn't work.`,
-						ephemeral: true,
-					})
+					await e
+						.reply({
+							content: `Tried to execute [${e.commandName} ${e.options._subcommand}] and it didn't work.`,
+							ephemeral: true,
+						})
+						.catch(err => console.error(err))
 				}
 			}
 		}
@@ -68,10 +70,12 @@ module.exports = {
 								await command.update(e)
 							} catch (error) {
 								console.error(error)
-								await e.reply({
-									content: `An error occured while playing [${commandName} ${subName}].`,
-									ephemeral: true,
-								})
+								await e
+									.reply({
+										content: `An error occured while playing [${commandName} ${subName}].`,
+										ephemeral: true,
+									})
+									.catch(err => console.error(err))
 							}
 						}
 					}
@@ -95,14 +99,16 @@ module.exports = {
 
 						if (player) {
 							try {
-								await e.deferUpdate()
+								await e.deferUpdate().catch(err => console.error(err))
 								await command.end(e.message)
 							} catch (error) {
 								console.error(error)
-								await e.reply({
-									content: `An error occured when trying to execute this button [${commandName} ${subName}].`,
-									ephemeral: true,
-								})
+								await e
+									.reply({
+										content: `An error occured when trying to execute this button [${commandName} ${subName}].`,
+										ephemeral: true,
+									})
+									.catch(err => console.error(err))
 							}
 						}
 					}
@@ -125,10 +131,12 @@ module.exports = {
 							await command.modal(e)
 						} catch (error) {
 							console.error(error)
-							await e.reply({
-								content: `Tried to execute [${commandName} ${subName}] and it didn't work.`,
-								ephemeral: true,
-							})
+							await e
+								.reply({
+									content: `Tried to execute [${commandName} ${subName}] and it didn't work.`,
+									ephemeral: true,
+								})
+								.catch(err => console.error(err))
 						}
 					}
 				}
