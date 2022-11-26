@@ -2,8 +2,6 @@ const {
 		SlashCommandSubcommandBuilder,
 		time,
 		TimestampStyles,
-		userMention,
-		roleMention,
 	} = require(`@discordjs/builders`),
 	{ CommandInteraction } = require('discord.js'),
 	{ discordBadges } = require(`../../func/utils/badges`)
@@ -38,33 +36,33 @@ module.exports = {
 	 * @param {CommandInteraction} e
 	 */
 	async execute(e) {
-		let guild = e.guild
+		let guild = e.guild,
+			mention = e.options.getMember(cmd.opt.name)
 
-		let mention = e.options.getUser(cmd.opt.name)
-				? guild.members.cache.find(m => m.id === e.options.getUser(cmd.opt.name).id)
-				: guild.members.cache.find(m => m.id === e.member.id),
-			fields = [
-				{
-					inline: true,
-					name: `Conta criada`,
-					value: time(mention.user.createdAt, TimestampStyles.RelativeTime),
-				},
-				{
-					inline: true,
-					name: `Pertence ao servidor`,
-					value: time(mention.joinedAt, TimestampStyles.RelativeTime),
-				},
-				{
-					inline: false,
-					name: `ID`,
-					value: mention.user.id,
-				},
-				{
-					inline: true,
-					name: `Usuário`,
-					value: userMention(mention.user.id),
-				},
-			]
+		mention ??= e.member
+
+		fields = [
+			{
+				inline: true,
+				name: `Conta criada`,
+				value: time(mention.user.createdAt, TimestampStyles.RelativeTime),
+			},
+			{
+				inline: true,
+				name: `Pertence ao servidor`,
+				value: time(mention.joinedAt, TimestampStyles.RelativeTime),
+			},
+			{
+				inline: false,
+				name: `ID`,
+				value: mention.user.id,
+			},
+			{
+				inline: true,
+				name: `Usuário`,
+				value: mention.user.toString(),
+			},
+		]
 
 		let badges = mention.user.flags.toArray(),
 			roles = [],
@@ -80,7 +78,7 @@ module.exports = {
 			}
 
 		mention.roles.cache.forEach(r => {
-			if (r.name != `@everyone`) roles.push(roleMention(r.id))
+			if (r.name != `@everyone`) roles.push(r.toString())
 		})
 
 		if (badges.length != 0) {

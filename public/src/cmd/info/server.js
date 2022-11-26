@@ -1,11 +1,8 @@
 const {
 		SlashCommandSubcommandBuilder,
-		channelMention,
 		time,
 		TimestampStyles,
-		userMention,
 		formatEmoji,
-		roleMention,
 	} = require(`@discordjs/builders`),
 	{ CommandInteraction, Colors } = require('discord.js')
 
@@ -28,8 +25,8 @@ module.exports = {
 	 * @param {CommandInteraction} e
 	 */
 	async execute(e) {
-		let guild = e.guild
-		let member = guild.members.cache.find(m => m.id === e.member.id)
+		let guild = e.guild,
+			member = e.member
 
 		let emb = {
 			author: {
@@ -41,7 +38,7 @@ module.exports = {
 				{
 					inline: false,
 					name: `Dono do servidor`,
-					value: userMention(guild.ownerId),
+					value: `<@${guild.ownerId}>`,
 				},
 				{
 					inline: true,
@@ -96,7 +93,7 @@ module.exports = {
 			let roles = ``
 			guild.roles.cache.each(r => {
 				if (r.name != `@everyone`) {
-					let fmtdRole = roleMention(r.id)
+					let fmtdRole = r.toString()
 					if (roles.length + fmtdRole.length < 1024) roles += fmtdRole
 					else return
 				}
@@ -112,7 +109,7 @@ module.exports = {
 			emb.fields.push({
 				inline: true,
 				name: `Canal de regras`,
-				value: channelMention(guild.rulesChannelId),
+				value: guild.rulesChannel.toString(),
 			})
 		}
 
@@ -120,7 +117,7 @@ module.exports = {
 			emb.fields.push({
 				inline: true,
 				name: `Canal de inativos`,
-				value: channelMention(guild.afkChannelId),
+				value: guild.afkChannel.toString(),
 			})
 		}
 

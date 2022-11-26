@@ -1,7 +1,4 @@
-const {
-		SlashCommandSubcommandBuilder,
-		userMention,
-	} = require(`@discordjs/builders`),
+const { SlashCommandSubcommandBuilder } = require(`@discordjs/builders`),
 	{ CommandInteraction, Colors } = require(`discord.js`),
 	{ random } = require(`../../func/func`)
 
@@ -84,9 +81,8 @@ module.exports = {
 		let octopus_choice = random(midterm * 2),
 			op1 = e.options.getString(cmd.opt1.name),
 			op2 = e.options.getString(cmd.opt2.name),
-			guild = e.guild
-
-		let member = guild.members.cache.find(m => m.id === e.member.id)
+			guild = e.guild,
+			member = e.member
 
 		let emb = {
 			author: {
@@ -108,7 +104,7 @@ module.exports = {
 				{
 					inline: false,
 					name: `Jogador`,
-					value: userMention(member.id),
+					value: member.toString(),
 				},
 			],
 			image: {

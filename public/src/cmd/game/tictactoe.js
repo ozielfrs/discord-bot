@@ -8,7 +8,6 @@ const {
 		TextInputStyle,
 		ModalSubmitInteraction,
 		Message,
-		userMention,
 	} = require(`discord.js`),
 	{ customIds, maxT } = require(`../../event/interactionCreate`),
 	wait = require('node:timers/promises').setTimeout
@@ -40,11 +39,9 @@ module.exports = {
 	 * @param {CommandInteraction} e
 	 */
 	async execute(e) {
-		let guild = e.guild
-		let member = guild.members.cache.find(m => m.id === e.member.id),
-			mention = guild.members.cache.find(
-				m => m.id === e.options.getUser(cmd.opt.name).id
-			)
+		let guild = e.guild,
+			member = e.member,
+			mention = e.options.getMember(cmd.opt.name)
 
 		if (mention && !mention.user.bot) {
 			let emb = {
@@ -61,12 +58,12 @@ module.exports = {
 						{
 							inline: true,
 							name: `Jogador 1`,
-							value: userMention(member.id),
+							value: member.toString(),
 						},
 						{
 							inline: true,
 							name: `Jogador 2`,
-							value: userMention(mention.id),
+							value: mention.toString(),
 						},
 						{
 							inline: false,
@@ -242,10 +239,9 @@ module.exports = {
 
 				let playerId = e.message.embeds
 					.at(0)
-					.fields.find(obj => obj.name == playerName)
-					.value.slice(2, -1)
+					.fields.find(obj => obj.name == playerName).value
 
-				let member = e.guild.members.cache.find(u => u.id === playerId)
+				let member = e.guild.members.cache.find(u => u.toString() === playerId)
 
 				if (member) {
 					emb.fields.at(2).value = playerName
@@ -254,8 +250,7 @@ module.exports = {
 				}
 				if (winner) {
 					emb.color = member.displayColor
-					emb.description =
-						`🏆 ${userMention(playerId)} venceu!\n\n` + emb.description
+					emb.description = `🏆 ${playerId} venceu!\n\n` + emb.description
 				} else if (drawn) {
 					emb.description = `👵 Deu velha!\n\n` + emb.description
 				}
