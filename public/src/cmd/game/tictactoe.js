@@ -9,43 +9,43 @@ const {
 		ModalSubmitInteraction,
 		Message,
 	} = require(`discord.js`),
-	{ customIds, maxT } = require(`../../event/interactionCreate`),
+	{ customIds, max_time } = require(`../../event/baseInteractionHandler`),
 	wait = require('node:timers/promises').setTimeout
 
-let cmd = {
+let command = {
 	name: `tictactoe`,
-	desc: `Use para jogar jogo da velha com algum usuário`,
-	opt: {
+	description: `Use para jogar jogo da velha com algum usuário`,
+	userOption: {
 		name: `mention`,
-		desc: `Marque um usuário`,
-		req: true,
+		description: `Marque um usuário`,
+		required: true,
 	},
 	color: Colors.Blurple,
 }
 
 module.exports = {
 	data: new SlashCommandSubcommandBuilder()
-		.setName(cmd.name)
-		.setDescription(cmd.desc)
-		.addUserOption(op =>
-			op
-				.setName(cmd.opt.name)
-				.setDescription(cmd.opt.desc)
-				.setRequired(cmd.opt.req)
+		.setName(command.name)
+		.setDescription(command.description)
+		.addUserOption(option =>
+			option
+				.setName(command.userOption.name)
+				.setDescription(command.userOption.description)
+				.setRequired(command.userOption.required)
 		),
 
 	/**
 	 *
-	 * @param {CommandInteraction} e
+	 * @param {CommandInteraction<"cached">} interaction
 	 */
-	async execute(e) {
-		let guild = e.guild,
-			member = e.member,
-			mention = e.options.getMember(cmd.opt.name)
+	async execute(interaction) {
+		let guild = interaction.guild,
+			member = interaction.member,
+			mention = interaction.options.getMember(command.userOption.name)
 
 		if (mention && !mention.user.bot) {
-			let emb = {
-					color: cmd.color,
+			var embed = {
+					color: command.color,
 					description:
 						`⬛⬛⬛⬛⬛⬛⬛\n` +
 						`⬛1️⃣⬛2️⃣⬛3️⃣⬛\n` +
@@ -67,7 +67,7 @@ module.exports = {
 						},
 						{
 							inline: false,
-							name: `Fim <t:${((Date.now() + maxT) * 1e-3).toFixed()}:R>`,
+							name: `Fim <t:${((Date.now() + max_time) * 1e-3).toFixed()}:R>`,
 							value: `Jogador 2`,
 						},
 					],
@@ -81,17 +81,17 @@ module.exports = {
 					timestamp: new Date().toISOString(),
 					title: `TicTacToe Game`,
 				},
-				actRow = {
+				buttonsActionRow = {
 					components: [
 						{
-							custom_id: `${customIds.gamesId}tictactoe${customIds.updateId}`,
+							custom_id: `${customIds.gameId}tictactoe${customIds.updateId}`,
 							disabled: false,
 							label: `Vez do Jogador 2`,
 							style: ButtonStyle.Primary,
 							type: ComponentType.Button,
 						},
 						{
-							custom_id: `${customIds.gamesId}tictactoe${customIds.endId}`,
+							custom_id: `${customIds.gameId}tictactoe${customIds.endId}`,
 							disabled: false,
 							label: `Encerrar o jogo`,
 							style: ButtonStyle.Danger,
@@ -101,14 +101,14 @@ module.exports = {
 					type: ComponentType.ActionRow,
 				}
 
-			await e
-				.reply({ embeds: [emb], components: [actRow] })
+			await interaction
+				.reply({ embeds: [embed], components: [buttonsActionRow] })
 				.then(
 					async () =>
-						await wait(maxT)
+						await wait(max_time)
 							.then(
 								async () =>
-									await e
+									await interaction
 										.fetchReply()
 										.then(msg => this.end(msg))
 										.catch(err => console.error(err))
@@ -117,7 +117,7 @@ module.exports = {
 				)
 				.catch(err => console.error(err))
 		} else {
-			await e
+			await interaction
 				.reply({
 					content: `Você deve jogar com um usuário do servidor! ;).`,
 					ephemeral: true,
@@ -128,106 +128,109 @@ module.exports = {
 
 	/**
 	 *
-	 * @param { Message } e
+	 * @param { Message<true> } message
 	 */
-	async end(e) {
-		let actRow = e.components.map(comp => comp.toJSON()),
-			emb = e.embeds.map(emb => emb.toJSON())
+	async end(message) {
+		let buttonsActionRow = message.components.map(component =>
+				component.toJSON()
+			),
+			embeds = message.embeds.map(embed => embed.toJSON())
 
-		actRow.forEach(row => {
-			row.components.forEach(btn => {
-				btn.disabled = true
-				btn.style = ButtonStyle.Secondary
+		buttonsActionRow.forEach(row => {
+			row.components.forEach(button => {
+				button.disabled = true
+				button.style = ButtonStyle.Secondary
 			})
 		})
 
-		emb.forEach(emb => {
-			emb.title ? (emb.title += ' (Encerrado)') : false
+		embeds.forEach(embed => {
+			embed.title ? (embed.title += ' (Encerrado)') : false
 		})
 
-		if (e.editable) {
-			await e
-				.edit({ embeds: emb, components: actRow })
+		if (message.editable) {
+			await message
+				.edit({ embeds: embeds, components: buttonsActionRow })
 				.catch(err => console.error(err))
 		}
 	},
 
 	/**
 	 *
-	 * @param {ModalSubmitInteraction} e
+	 * @param {ModalSubmitInteraction<"cached">} interaction
 	 */
-	async modal(e) {
-		let playerName = e.message.embeds.at(0).fields.at(2).value,
-			pos = e.fields.getTextInputValue(
-				`${customIds.gamesId}tictactoe${customIds.modalId}${customIds.txtInId}`
+	async modal(interaction) {
+		let member = interaction.member,
+			playerName = interaction.message.embeds.at(0).fields.at(2).value,
+			mainEmbed = interaction.message.embeds.at(0).toJSON(),
+			buttonsActionRow = interaction.message.components.at(0).toJSON(),
+			positionSubmited = interaction.fields.getTextInputValue(
+				`${customIds.gameId}tictactoe${customIds.modalId}${customIds.txtInId}`
 			),
-			emojiStrings = [`1️⃣`, `2️⃣`, `3️⃣`, `4️⃣`, `5️⃣`, `6️⃣`, `7️⃣`, `8️⃣`, `9️⃣`],
+			numberEmojis = [`1️⃣`, `2️⃣`, `3️⃣`, `4️⃣`, `5️⃣`, `6️⃣`, `7️⃣`, `8️⃣`, `9️⃣`],
 			winner = false,
-			playerEmoji = `❎`,
-			specEmoji = `🅾`
+			drawn = false,
+			allyEmoji = `❎`,
+			enemyEmoji = `🅾`,
+			logicBoard = [],
+			freePositions = {}
 
 		if (playerName == `Jogador 2`) {
-			let aux = playerEmoji
-			playerEmoji = specEmoji
-			specEmoji = aux
+			let auxEmoji = allyEmoji
+			allyEmoji = enemyEmoji
+			enemyEmoji = auxEmoji
 		}
 
-		let emb = e.message.embeds.at(0).toJSON()
-
-		if (parseInt(pos) > 0 && parseInt(pos) <= 9) {
-			let free = {}
-
-			emojiStrings.map(str => {
-				if (emb.description.includes(str)) {
-					free[emojiStrings.indexOf(str) + 1] = str
+		if (parseInt(positionSubmited) > 0 && parseInt(positionSubmited) <= 9) {
+			numberEmojis.map(emoji => {
+				if (mainEmbed.description.includes(emoji)) {
+					freePositions[numberEmojis.indexOf(emoji) + 1] = emoji
 				}
 			})
 
-			if (pos in free) {
-				emb.description = emb.description.replace(
-					free[parseInt(pos)],
-					`${playerEmoji}`
+			if (positionSubmited in freePositions) {
+				mainEmbed.description = mainEmbed.description.replace(
+					freePositions[parseInt(positionSubmited)],
+					`${allyEmoji}`
 				)
 
-				let actRow = e.message.components.at(0).toJSON(),
-					lock = []
-
-				let opts = emb.description
+				let board = mainEmbed.description
 						.split(`⬛`)
 						.filter(val => val.length != 0 && val != '' && val != '\n')
 						.map(str => (str = str.replace(`\n`, ``))),
-					val1 = 5,
-					val2 = 3
+					allyValue = 5,
+					enemyValue = 3
 
-				for (const val of opts) {
-					if (val == playerEmoji) {
-						lock.push(val1)
-					} else if (val == specEmoji) {
-						lock.push(val2)
+				for (const value of board) {
+					if (value == allyEmoji) {
+						logicBoard.push(allyValue)
+					} else if (value == enemyEmoji) {
+						logicBoard.push(enemyValue)
 					} else {
-						lock.push(0)
+						logicBoard.push(0)
 					}
 				}
 
-				for (let i = 0; i < lock.length / 3; i++) {
-					let r = lock[i + 2 * i] + lock[i + 1 + 2 * i] + lock[i + 2 + 2 * i],
-						c = lock[i] + lock[i + 3] + lock[i + 6],
-						d = i != 1 ? lock[i] + lock[4] + lock[-i + 8] : 0
+				for (let i = 0; i < logicBoard.length / 3; i++) {
+					let r =
+							logicBoard[i + 2 * i] +
+							logicBoard[i + 1 + 2 * i] +
+							logicBoard[i + 2 + 2 * i],
+						c = logicBoard[i] + logicBoard[i + 3] + logicBoard[i + 6],
+						d = i != 1 ? logicBoard[i] + logicBoard[4] + logicBoard[-i + 8] : 0
 					if (
-						r == val1 * 3 ||
-						r == val2 * 3 ||
-						c == val1 * 3 ||
-						c == val2 * 3 ||
-						d == val1 * 3 ||
-						d == val2 * 3
+						r == allyValue * 3 ||
+						r == enemyValue * 3 ||
+						c == allyValue * 3 ||
+						c == enemyValue * 3 ||
+						d == allyValue * 3 ||
+						d == enemyValue * 3
 					) {
 						winner = true
 						break
 					}
 				}
 
-				let drawn = false
-				if (lock.find(val => val == 0) === undefined) {
+				if (logicBoard.find(val => val == 0) === undefined) {
 					drawn = true
 				}
 
@@ -237,35 +240,29 @@ module.exports = {
 						: (playerName = `Jogador 1`)
 				}
 
-				let playerId = e.message.embeds
-					.at(0)
-					.fields.find(obj => obj.name == playerName).value
+				mainEmbed.fields.at(2).value = playerName
+				mainEmbed.thumbnail.url = member.displayAvatarURL()
+				buttonsActionRow.components.at(0).label = `Vez do ${playerName}`
 
-				let member = e.guild.members.cache.find(u => u.toString() === playerId)
-
-				if (member) {
-					emb.fields.at(2).value = playerName
-					emb.thumbnail.url = member.displayAvatarURL()
-					actRow.components.at(0).label = `Vez do ${playerName}`
-				}
 				if (winner) {
-					emb.color = member.displayColor
-					emb.description = `🏆 ${playerId} venceu!\n\n` + emb.description
+					mainEmbed.color = member.displayColor
+					mainEmbed.description =
+						`🏆 ${member.toString()} venceu!\n\n` + mainEmbed.description
 				} else if (drawn) {
-					emb.description = `👵 Deu velha!\n\n` + emb.description
+					mainEmbed.description = `👵 Deu velha!\n\n` + mainEmbed.description
 				}
 
-				await e
+				await interaction
 					.deferUpdate()
-					.then(async res => {
-						return await res.interaction.editReply({
-							embeds: [emb],
-							components: [actRow],
+					.then(async response => {
+						return await response.interaction.editReply({
+							embeds: [mainEmbed],
+							components: [buttonsActionRow],
 						})
 					})
-					.then(async res => {
+					.then(async message => {
 						if (winner || drawn) {
-							this.end(res)
+							this.end(message)
 						}
 					})
 					.catch(err => console.error(err))
@@ -275,15 +272,15 @@ module.exports = {
 
 	/**
 	 *
-	 * @param {ButtonInteraction} e
+	 * @param {ButtonInteraction<"cached">} interaction
 	 */
-	async update(e) {
+	async update(interaction) {
 		let modal = {
 			components: [
 				{
 					components: [
 						{
-							custom_id: `${customIds.gamesId}tictactoe${customIds.modalId}${customIds.txtInId}`,
+							custom_id: `${customIds.gameId}tictactoe${customIds.modalId}${customIds.txtInId}`,
 							label: `Marque uma posição`,
 							max_length: 1,
 							placeholder: `Insira um número`,
@@ -295,10 +292,10 @@ module.exports = {
 					type: ComponentType.ActionRow,
 				},
 			],
-			custom_id: `${customIds.gamesId}tictactoe${customIds.modalId}`,
+			custom_id: `${customIds.gameId}tictactoe${customIds.modalId}`,
 			title: `Sua vez de jogar`,
 		}
 
-		await e.showModal(modal).catch(err => console.error(err))
+		await interaction.showModal(modal).catch(err => console.error(err))
 	},
 }

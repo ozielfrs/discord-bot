@@ -6,10 +6,10 @@ const {
 	} = require(`@discordjs/builders`),
 	{ CommandInteraction, Colors } = require('discord.js')
 
-let cmd = {
+let command = {
 	name: `server`,
-	desc: `Responde com informações do servidor`,
-	fmt: {
+	description: `Responde com informações do servidor`,
+	avatarFormat: {
 		width: 256,
 		dynamic: true,
 	},
@@ -17,18 +17,18 @@ let cmd = {
 
 module.exports = {
 	data: new SlashCommandSubcommandBuilder()
-		.setName(cmd.name)
-		.setDescription(cmd.desc),
+		.setName(command.name)
+		.setDescription(command.description),
 
 	/**
 	 *
-	 * @param {CommandInteraction} e
+	 * @param {CommandInteraction<"cached">} interaction
 	 */
-	async execute(e) {
-		let guild = e.guild,
-			member = e.member
+	async execute(interaction) {
+		let guild = interaction.guild,
+			member = interaction.member
 
-		let emb = {
+		let embed = {
 			author: {
 				name: guild.name,
 				icon_url: guild.iconURL(),
@@ -51,7 +51,7 @@ module.exports = {
 					value: guild.id,
 				},
 			],
-			image: { url: guild.iconURL({ options: cmd.fmt }) },
+			image: { url: guild.iconURL({ options: command.avatarFormat }) },
 			footer: {
 				text: `${guild.memberCount} usuários`,
 				icon_url: member.displayAvatarURL(),
@@ -61,14 +61,14 @@ module.exports = {
 		}
 
 		if (guild.bannerURL()) {
-			emb.thumbnail = {
+			embed.thumbnail = {
 				url: guild.iconURL(),
 			}
-			emb.image.url = guild.bannerURL()
+			embed.image.url = guild.bannerURL()
 		}
 
 		if (guild.description) {
-			emb.fields.push({
+			embed.fields.push({
 				inline: false,
 				name: `Descrição`,
 				value: guild.description,
@@ -77,12 +77,12 @@ module.exports = {
 
 		if (guild.emojis.cache.size) {
 			let emojis = ``
-			guild.emojis.cache.each(em => {
-				let fmtdEmoji = formatEmoji(em.id, em.animated)
+			guild.emojis.cache.each(emoji => {
+				let fmtdEmoji = formatEmoji(emoji.id, emoji.animated)
 				if (emojis.length + fmtdEmoji.length < 1024) emojis += fmtdEmoji
 				else return
 			})
-			emb.fields.push({
+			embed.fields.push({
 				inline: false,
 				name: `Principais emojis`,
 				value: emojis,
@@ -91,14 +91,14 @@ module.exports = {
 
 		if (guild.roles.cache.size) {
 			let roles = ``
-			guild.roles.cache.each(r => {
-				if (r.name != `@everyone`) {
-					let fmtdRole = r.toString()
+			guild.roles.cache.each(role => {
+				if (role.name != `@everyone`) {
+					let fmtdRole = role.toString()
 					if (roles.length + fmtdRole.length < 1024) roles += fmtdRole
 					else return
 				}
 			})
-			emb.fields.push({
+			embed.fields.push({
 				inline: false,
 				name: `Principais cargos`,
 				value: roles,
@@ -106,7 +106,7 @@ module.exports = {
 		}
 
 		if (guild.rulesChannel) {
-			emb.fields.push({
+			embed.fields.push({
 				inline: true,
 				name: `Canal de regras`,
 				value: guild.rulesChannel.toString(),
@@ -114,13 +114,13 @@ module.exports = {
 		}
 
 		if (guild.afkChannel) {
-			emb.fields.push({
+			embed.fields.push({
 				inline: true,
 				name: `Canal de inativos`,
 				value: guild.afkChannel.toString(),
 			})
 		}
 
-		await e.reply({ embeds: [emb] }).catch(err => console.error(err))
+		await interaction.reply({ embeds: [embed] }).catch(err => console.error(err))
 	},
 }

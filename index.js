@@ -1,15 +1,15 @@
-const confPath = `./private/conf/config.json`
+const { configPath } = require(`./configPath`)
 
 const { Client, GatewayIntentBits, Collection } = require(`discord.js`),
-	{ token } = require(confPath),
+	{ token } = require(configPath),
 	fs = require(`node:fs`)
 
-const CLI = new Client({ intents: GatewayIntentBits.Guilds })
+const client = new Client({ intents: GatewayIntentBits.Guilds })
 
 /**
  * Path for commands and commands array
  */
-const cmdPath = fs
+const commandPaths = fs
 	.readdirSync(`./public/src/cmd`, { withFileTypes: true })
 	.filter(dirent => dirent.isDirectory())
 	.map(dirent => dirent.name)
@@ -17,8 +17,8 @@ const cmdPath = fs
 /**
  * Find and add subcommands
  */
-cmdPath.forEach(dirName => {
-	CLI[`${dirName}`] = new Collection()
+commandPaths.forEach(dirName => {
+	client[`${dirName}`] = new Collection()
 
 	const subCommandFiles = fs
 		.readdirSync(`./public/src/cmd/${dirName}`)
@@ -29,7 +29,7 @@ cmdPath.forEach(dirName => {
 	subCommandFiles.forEach(fileName => {
 		let command = require(`./public/src/cmd/${dirName}/${fileName}`)
 
-		CLI[`${dirName}`].set(`${dirName} ${command.data.name}`, command)
+		client[`${dirName}`].set(`${dirName} ${command.data.name}`, command)
 	})
 })
 
@@ -38,29 +38,17 @@ let eventFiles = fs
 	.filter(file => file.endsWith(`.js`))
 
 for (const file of eventFiles) {
-	let e = require(`./public/src/event/${file}`)
-	if (e.once) {
-		CLI.once(e.name, (...args) => e.execute(...args))
+	let event = require(`./public/src/event/${file}`)
+	if (event.once) {
+		client.once(event.name, (...args) => event.execute(...args))
 	} else {
-		CLI.on(e.name, (...args) => e.execute(...args))
+		client.on(event.name, (...args) => event.execute(...args))
 	}
 }
 
-CLI.login(token)
+client
+	.login(token)
 	.then(() => {
-		console.log(`Updating guilds list...`)
-		let conf = JSON.parse(fs.readFileSync(confPath))
-
-		conf.GuildIDs = []
-		CLI.guilds.cache.forEach(guild => {
-			if (!(guild.id in conf.blockedGuildIDs)) conf.GuildIDs.push(guild.id)
-		})
-
-		fs.writeFileSync(confPath, JSON.stringify(conf))
-
-		console.log(`Guilds list updated.`)
-	})
-	.then(() => {
-		console.log(`Bot started, ${CLI.user.tag}.`)
+		console.log(`Bot started, ${client.user.tag}.`)
 	})
 	.catch(err => console.error(err))

@@ -4,8 +4,9 @@
 	"description": "Sejam bem-vindos ao início desse \"Projeto\". :smile:",
 	"main": "index.js",
 	"scripts": {
-		"start": "node ./deploy-cmd.js && node .",
+		"start": "node ./update-guilds.js && node ./deploy-cmd.js && node .",
 		"deploy": "node ./deploy-cmd.js",
+		"update": "node ./update-guilds.js",
 		"test": "echo \"Error: no test specified\" && exit 1"
 	},
 	"repository": {

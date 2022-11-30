@@ -2,30 +2,25 @@ const { SlashCommandSubcommandBuilder } = require(`@discordjs/builders`),
 	{ CommandInteraction, Colors } = require(`discord.js`),
 	{ random } = require(`../../func/func`)
 
-let cmd = {
+let command = {
 	name: `polvo`,
-	desc: `O polvo decide qual a melhor entre duas opções (ele pode mudar de opinião).`,
-	strmax: 256,
-	opt1: {
+	description: `O polvo decide qual a melhor entre duas opções (ele pode mudar de opinião).`,
+	max_size: 256,
+	stringOption1: {
 		name: `primeira`,
-		desc: `Escreva a primeira opção.`,
-		req: true,
+		description: `Escreva a primeira opção.`,
+		required: true,
 	},
-	opt2: {
+	StringOption2: {
 		name: `segunda`,
-		desc: `Escreva a segunda opção.`,
-		req: true,
+		description: `Escreva a segunda opção.`,
+		required: true,
 	},
-	emb: {
+	embed: {
 		title: `#0 PERGUNTOU AO 🐙!`,
 		color: Colors.Purple,
-		txt: {
-			opt1: `A primeira opção era`,
-			opt2: `A segunda opção era`,
-			dec: `O 🐙 DECIDIU ESCOLHER A MELHOR ENTRE ELAS!`,
-			none: `\nO 🐙 DECIDIU QUE NENHUMA DAS OPÇÕES É DIGNA!`,
-			final: `\nA escolha do 🐙 é: #0!`,
-		},
+		choice: `\nA escolha do 🐙 é: #0!`,
+
 		images: [
 			//special one
 			`https://i.imgur.com/IJN4w4N.png`,
@@ -46,7 +41,7 @@ let cmd = {
 			`https://c.tenor.com/dtwnYquTNhMAAAAS/sus-imposter.gif`,
 		],
 	},
-	fmt: {
+	avatarFormat: {
 		size: 256,
 		dynamic: true,
 	},
@@ -54,52 +49,52 @@ let cmd = {
 
 module.exports = {
 	data: new SlashCommandSubcommandBuilder()
-		.setName(cmd.name)
-		.setDescription(cmd.desc)
-		.addStringOption(op =>
-			op
-				.setName(cmd.opt1.name)
-				.setDescription(cmd.opt1.desc)
-				.setRequired(cmd.opt1.req)
-				.setMaxLength(cmd.strmax)
+		.setName(command.name)
+		.setDescription(command.description)
+		.addStringOption(option =>
+			option
+				.setName(command.stringOption1.name)
+				.setDescription(command.stringOption1.description)
+				.setRequired(command.stringOption1.required)
+				.setMaxLength(command.max_size)
 		)
-		.addStringOption(op =>
-			op
-				.setName(cmd.opt2.name)
-				.setDescription(cmd.opt2.desc)
-				.setRequired(cmd.opt2.req)
-				.setMaxLength(cmd.strmax)
+		.addStringOption(option =>
+			option
+				.setName(command.StringOption2.name)
+				.setDescription(command.StringOption2.description)
+				.setRequired(command.StringOption2.required)
+				.setMaxLength(command.max_size)
 		),
 
 	/**
 	 *
-	 * @param {CommandInteraction} e
+	 * @param {CommandInteraction<"cached">} interaction
 	 */
-	async execute(e) {
-		let midterm = 50
+	async execute(interaction) {
+		let halfOfRandoms = 20
 
-		let octopus_choice = random(midterm * 2),
-			op1 = e.options.getString(cmd.opt1.name),
-			op2 = e.options.getString(cmd.opt2.name),
-			guild = e.guild,
-			member = e.member
+		let octopusChoice = random(halfOfRandoms * 2),
+			firstOption = interaction.options.getString(command.stringOption1.name),
+			secondOption = interaction.options.getString(command.StringOption2.name),
+			guild = interaction.guild,
+			member = interaction.member
 
-		let emb = {
+		let embed = {
 			author: {
 				name: `${member.displayName}`,
 				icon_url: member.displayAvatarURL(),
 			},
-			color: cmd.emb.color,
+			color: command.embed.color,
 			fields: [
 				{
 					inline: true,
-					name: cmd.emb.txt.opt1,
-					value: op1,
+					name: `A primeira opção era`,
+					value: firstOption,
 				},
 				{
 					inline: true,
-					name: cmd.emb.txt.opt2,
-					value: op2,
+					name: `A segunda opção era`,
+					value: secondOption,
 				},
 				{
 					inline: false,
@@ -111,24 +106,31 @@ module.exports = {
 				url: String(),
 			},
 			footer: {
-				text: cmd.emb.txt.dec,
+				text: `O 🐙 DECIDIU ESCOLHER A MELHOR ENTRE ELAS!`,
 				icon_url: guild.iconURL(),
 			},
 			timestamp: new Date().toISOString(),
-			title: cmd.emb.title.replace(`#0`, member.displayName),
+			title: command.embed.title.replace(`#0`, member.displayName),
 		}
 
-		if (octopus_choice < midterm) {
-			emb.description = cmd.emb.txt.final.replace(`#0`, op1)
-			emb.image.url = cmd.emb.images.at(random(cmd.emb.images.length - 2))
-		} else if (octopus_choice == midterm) {
-			emb.description = cmd.emb.txt.none
-			emb.image.url = cmd.emb.images.at(cmd.emb.images.length - 1)
+		if (octopusChoice < halfOfRandoms) {
+			embed.description = command.embed.choice.replace(`#0`, firstOption)
+			embed.image.url = command.embed.images.at(
+				random(command.embed.images.length - 2)
+			)
+		} else if (octopusChoice == halfOfRandoms) {
+			embed.description = command.embed.choice.replace(
+				`#0`,
+				`\nO 🐙 DECIDIU QUE NENHUMA DAS OPÇÕES É DIGNA!`
+			)
+			embed.image.url = command.embed.images.at(command.embed.images.length - 1)
 		} else {
-			emb.description = cmd.emb.txt.final.replace(`#0`, op2)
-			emb.image.url = cmd.emb.images.at(random(cmd.emb.images.length - 2))
+			embed.description = command.embed.choice.replace(`#0`, secondOption)
+			embed.image.url = command.embed.images.at(
+				random(command.embed.images.length - 2)
+			)
 		}
 
-		await e.reply({ embeds: [emb] }).catch(err => console.error(err))
+		await interaction.reply({ embeds: [embed] }).catch(err => console.error(err))
 	},
 }

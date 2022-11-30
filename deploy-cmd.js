@@ -1,17 +1,14 @@
+const { configPath } = require(`./configPath`)
+
 const { REST } = require(`@discordjs/rest`),
 	{ Routes } = require(`discord-api-types/v10`),
-	{
-		cliID,
-		blockedGuildIDs,
-		GuildIDs,
-		token,
-	} = require(`./private/conf/config.json`),
+	{ cliID, Guilds, token } = require(configPath),
 	fs = require(`node:fs`)
 
 /**
  * Path for commands and commands array
  */
-const cmdPath = fs
+const commandPaths = fs
 		.readdirSync(`./public/src/cmd`, { withFileTypes: true })
 		.filter(dirent => dirent.isDirectory())
 		.map(dirent => dirent.name),
@@ -20,7 +17,7 @@ const cmdPath = fs
 /**
  * Find and add subcommands
  */
-cmdPath.forEach(file => {
+commandPaths.forEach(file => {
 	let main = require(`./public/src/cmd/${file}/${file}.js`)
 
 	const subCommandFiles = fs
@@ -45,19 +42,16 @@ const rest = new REST({ version: `10` }).setToken(token)
 	try {
 		console.log(`Started refreshing ${commands.length} application (/) commands.`)
 
-		for (const guild of GuildIDs) {
-			let req
-			if (!(guild in blockedGuildIDs)) {
-				req = await rest
-					.put(Routes.applicationGuildCommands(cliID, guild), {
-						body: commands,
-					})
-					.catch(err => console.error(err))
+		for (const guild of Guilds) {
+			let request = await rest
+				.put(Routes.applicationGuildCommands(cliID, `${guild.id}`), {
+					body: commands.filter(command => guild.options.includes(command.name)),
+				})
+				.catch(err => console.error(err))
 
-				console.log(
-					`Successfully reloaded ${req.length} application (/) commands in ${guild}.`
-				)
-			}
+			console.log(
+				`Successfully reloaded ${request.length} application (/) commands in ${guild.id}.`
+			)
 		}
 	} catch (err) {
 		console.error(err)

@@ -24,8 +24,8 @@ module.exports = {
 	data: new SlashCommandSubcommandBuilder()
 		.setName(cmd.name)
 		.setDescription(cmd.desc)
-		.addUserOption(op =>
-			op
+		.addUserOption(option =>
+			option
 				.setName(cmd.opt.name)
 				.setDescription(cmd.opt.desc)
 				.setRequired(cmd.opt.req)
@@ -33,13 +33,13 @@ module.exports = {
 
 	/**
 	 *
-	 * @param {CommandInteraction} e
+	 * @param {CommandInteraction<"cached">} interaction
 	 */
-	async execute(e) {
-		let guild = e.guild,
-			mention = e.options.getMember(cmd.opt.name)
+	async execute(interaction) {
+		let guild = interaction.guild,
+			mention = interaction.options.getMember(cmd.opt.name)
 
-		mention ??= e.member
+		mention ??= interaction.member
 
 		fields = [
 			{
@@ -110,6 +110,6 @@ module.exports = {
 			timestamp: new Date().toISOString(),
 		}
 
-		await e.reply({ embeds: [emb] }).catch(err => console.error(err))
+		await interaction.reply({ embeds: [emb] }).catch(err => console.error(err))
 	},
 }
