@@ -36,7 +36,7 @@ module.exports = {
 			color: Colors.Blurple,
 			fields: [
 				{
-					inline: false,
+					inline: true,
 					name: `Dono do servidor`,
 					value: `<@${guild.ownerId}>`,
 				},
@@ -47,17 +47,16 @@ module.exports = {
 				},
 				{
 					inline: true,
-					name: `ID`,
+					name: `ID do Servidor`,
 					value: guild.id,
 				},
 			],
 			image: { url: guild.iconURL({ options: command.avatarFormat }) },
 			footer: {
 				text: `${guild.memberCount} usuários`,
-				icon_url: member.displayAvatarURL(),
+				icon_url: guild.iconURL(),
 			},
 			timestamp: new Date(guild.createdAt).toISOString(),
-			title: `Informações do Servidor`,
 		}
 
 		if (guild.bannerURL()) {

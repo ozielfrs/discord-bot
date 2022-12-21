@@ -4,7 +4,7 @@
 	"description": "Sejam bem-vindos ao início desse \"Projeto\". :smile:",
 	"main": "index.js",
 	"scripts": {
-		"start": "node ./update-guilds.js && node ./deploy-cmd.js && node .",
+		"start": "nodemon .",
 		"deploy": "node ./deploy-cmd.js",
 		"update": "node ./update-guilds.js",
 		"test": "echo \"Error: no test specified\" && exit 1"
@@ -21,6 +21,7 @@
 	},
 	"homepage": "https://github.com/ozielfrs/Discord-Bot-Node.js#readme",
 	"dependencies": {
-		"discord.js": "^14.6.0"
+		"discord.js": "^14.6.0",
+		"nodemon": "^2.0.20"
 	}
 }

@@ -9,7 +9,7 @@ const { REST } = require(`@discordjs/rest`),
  * Path for commands and commands array
  */
 const commandPaths = fs
-		.readdirSync(`./public/src/cmd`, { withFileTypes: true })
+		.readdirSync(`./src/cmd`, { withFileTypes: true })
 		.filter(dirent => dirent.isDirectory())
 		.map(dirent => dirent.name),
 	commands = []
@@ -18,10 +18,10 @@ const commandPaths = fs
  * Find and add subcommands
  */
 commandPaths.forEach(file => {
-	let main = require(`./public/src/cmd/${file}/${file}.js`)
+	let main = require(`./src/cmd/${file}/${file}.js`)
 
 	const subCommandFiles = fs
-		.readdirSync(`./public/src/cmd/${file}`)
+		.readdirSync(`./src/cmd/${file}`)
 		.filter(sub => sub.endsWith(`.js`) && !sub.includes(`${file}`))
 
 	console.log(file, subCommandFiles)
@@ -29,7 +29,7 @@ commandPaths.forEach(file => {
 	const slashWithSubs = main.data
 
 	subCommandFiles.forEach(fileName => {
-		let command = require(`./public/src/cmd/${file}/${fileName}`)
+		let command = require(`./src/cmd/${file}/${fileName}`)
 		slashWithSubs.addSubcommand(command.data)
 	})
 
