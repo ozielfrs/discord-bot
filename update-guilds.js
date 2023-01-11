@@ -1,25 +1,26 @@
-const { configPath } = require(`./configPath`)
+const { conf } = require(`./paths`)
+const { token } = require(conf)
 
-const { Client, GatewayIntentBits } = require(`discord.js`),
-	{ token } = require(configPath),
-	fs = require(`node:fs`)
+const { Client, GatewayIntentBits } = require(`discord.js`)
+const fs = require(`node:fs`)
 
-const CLI = new Client({ intents: GatewayIntentBits.Guilds })
+const client = new Client({ intents: GatewayIntentBits.Guilds })
 
-CLI.login(token)
+client
+	.login(token)
 	.then(() => {
 		console.log(`Updating guilds list...`)
-		let conf = JSON.parse(fs.readFileSync(configPath))
+		let conf = JSON.parse(fs.readFileSync(conf))
 
 		conf.Guilds = []
-		CLI.guilds.cache.forEach(guild => {
+		client.guilds.cache.forEach(guild => {
 			if (!(guild.id in conf.blockedGuilds))
 				conf.Guilds.push({ id: guild.id, options: ['game', 'info'] })
 		})
 
-		fs.writeFileSync(configPath, JSON.stringify(conf))
+		fs.writeFileSync(conf, JSON.stringify(conf))
 
 		console.log(`Guilds list updated.`)
 	})
-	.then(() => CLI.destroy())
+	.then(() => client.destroy())
 	.catch(err => console.error(err))

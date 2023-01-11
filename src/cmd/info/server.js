@@ -1,15 +1,15 @@
 const {
-		SlashCommandSubcommandBuilder,
-		time,
-		TimestampStyles,
-		formatEmoji,
-	} = require(`@discordjs/builders`),
-	{ CommandInteraction, Colors } = require('discord.js')
+	SlashCommandSubcommandBuilder,
+	time,
+	TimestampStyles,
+	formatEmoji,
+} = require(`@discordjs/builders`)
+const { CommandInteraction, Colors } = require('discord.js')
 
 let command = {
 	name: `server`,
 	description: `Responde com informações do servidor`,
-	avatarFormat: {
+	avatarImg: {
 		width: 256,
 		dynamic: true,
 	},
@@ -25,8 +25,7 @@ module.exports = {
 	 * @param {CommandInteraction<"cached">} interaction
 	 */
 	async execute(interaction) {
-		let guild = interaction.guild,
-			member = interaction.member
+		let guild = interaction.guild
 
 		let embed = {
 			author: {
@@ -51,7 +50,7 @@ module.exports = {
 					value: guild.id,
 				},
 			],
-			image: { url: guild.iconURL({ options: command.avatarFormat }) },
+			image: { url: guild.iconURL({ options: command.avatarImg }) },
 			footer: {
 				text: `${guild.memberCount} usuários`,
 				icon_url: guild.iconURL(),

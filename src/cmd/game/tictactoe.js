@@ -1,16 +1,16 @@
 const {
-		SlashCommandSubcommandBuilder,
-		Colors,
-		CommandInteraction,
-		ButtonInteraction,
-		ButtonStyle,
-		ComponentType,
-		TextInputStyle,
-		ModalSubmitInteraction,
-		Message,
-	} = require(`discord.js`),
-	{ customIds, max_time } = require(`../../event/baseInteractionHandler`),
-	wait = require('node:timers/promises').setTimeout
+	SlashCommandSubcommandBuilder,
+	Colors,
+	CommandInteraction,
+	ButtonInteraction,
+	ButtonStyle,
+	ComponentType,
+	TextInputStyle,
+	ModalSubmitInteraction,
+	Message,
+} = require(`discord.js`)
+const wait = require('node:timers/promises').setTimeout
+const { customIds, max_time } = require(`../../event/baseInteractionHandler`)
 
 let command = {
 	name: `tictactoe`,

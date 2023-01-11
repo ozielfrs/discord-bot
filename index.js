@@ -1,8 +1,8 @@
-const { configPath } = require(`./configPath`)
+const { conf } = require(`./paths`)
+const { token } = require(conf)
 
-const { Client, GatewayIntentBits, Collection } = require(`discord.js`),
-	{ token } = require(configPath),
-	fs = require(`node:fs`)
+const { Client, GatewayIntentBits, Collection } = require(`discord.js`)
+const fs = require(`node:fs`)
 
 const client = new Client({ intents: GatewayIntentBits.Guilds })
 

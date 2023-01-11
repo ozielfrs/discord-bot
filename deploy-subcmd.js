@@ -1,9 +1,9 @@
-const { configPath } = require(`./configPath`)
+const { conf } = require(`./paths`)
+const { cliID, Guilds, token } = require(conf)
 
-const { REST } = require(`@discordjs/rest`),
-	{ Routes } = require(`discord-api-types/v10`),
-	{ cliID, Guilds, token } = require(configPath),
-	fs = require(`node:fs`)
+const { REST } = require(`@discordjs/rest`)
+const { Routes } = require(`discord-api-types/v10`)
+const fs = require(`node:fs`)
 
 /**
  * Path for commands and commands array

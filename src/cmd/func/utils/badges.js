@@ -6,7 +6,7 @@ module.exports = {
 			shift: 22,
 			undocumented: false,
 			image: `./img/disc_activ_dev.png`,
-			emoji: `<:disc_activ_dev:1041783917021249538>`,
+			emoji: `<:_:1041783917021249538>`,
 		},
 		{
 			name: `BotHTTPInteractions`,
@@ -14,7 +14,7 @@ module.exports = {
 			shift: 19,
 			undocumented: false,
 			image: `./img/disc_bot_http.png`,
-			emoji: `<:disc_bot_http:1041901711796744263>`,
+			emoji: `<:_:1041901711796744263>`,
 		},
 		{
 			name: `BugHunterLevel1`,
@@ -22,7 +22,7 @@ module.exports = {
 			shift: 3,
 			undocumented: false,
 			image: `./img/disc_bug_h1.png`,
-			emoji: `<:disc_bug_h1:1041783920611561572>`,
+			emoji: `<:_:1041783920611561572>`,
 		},
 		{
 			name: `BugHunterLevel2`,
@@ -30,7 +30,7 @@ module.exports = {
 			shift: 14,
 			undocumented: false,
 			image: `./img/disc_bug_h2.png`,
-			emoji: `<:disc_bug_h2:1041783922125713509>`,
+			emoji: `<:_:1041783922125713509>`,
 		},
 		{
 			name: `CertifiedModerator`,
@@ -38,7 +38,7 @@ module.exports = {
 			shift: 18,
 			undocumented: false,
 			image: `./img/disc_mod.png`,
-			emoji: `<:disc_mod:1041783933341282385>`,
+			emoji: `<:_:1041783933341282385>`,
 		},
 		{
 			name: `HypeSquadOnlineHouse1`,
@@ -46,7 +46,7 @@ module.exports = {
 			shift: 6,
 			undocumented: false,
 			image: `./img/disc_hype_brave.png`,
-			emoji: `<:disc_hype_brave:1041783927666393148>`,
+			emoji: `<:_:1041783927666393148>`,
 		},
 		{
 			name: `HypeSquadOnlineHouse2`,
@@ -54,7 +54,7 @@ module.exports = {
 			shift: 7,
 			undocumented: false,
 			image: `./img/disc_hype_brill.png`,
-			emoji: `<:disc_hype_brill:1041783929063084122>`,
+			emoji: `<:_:1041783929063084122>`,
 		},
 		{
 			name: `HypeSquadOnlineHouse3`,
@@ -62,7 +62,7 @@ module.exports = {
 			shift: 8,
 			undocumented: false,
 			image: `./img/disc_hype_balan.png`,
-			emoji: `<:disc_hype_balan:1041783926215147580>`,
+			emoji: `<:_:1041783926215147580>`,
 		},
 		{
 			name: `Hypesquad`,
@@ -70,7 +70,7 @@ module.exports = {
 			shift: 2,
 			undocumented: false,
 			image: `./img/disc_hype.png`,
-			emoji: `<:disc_hype:1041783924860387458>`,
+			emoji: `<:_:1041783924860387458>`,
 		},
 		{
 			name: `Partner`,
@@ -78,7 +78,7 @@ module.exports = {
 			shift: 1,
 			undocumented: false,
 			image: `./img/png/disc_partner.png`,
-			emoji: `<:disc_partner:1041783934884790363>`,
+			emoji: `<:_:1041783934884790363>`,
 		},
 		{
 			name: `PremiumEarlySupporter`,
@@ -86,7 +86,7 @@ module.exports = {
 			shift: 9,
 			undocumented: false,
 			image: `./img/disc_early_sup.png`,
-			emoji: `<:disc_early_sup:1041783923480477707>`,
+			emoji: `<:_:1041783923480477707>`,
 		},
 		{
 			name: `Staff`,
@@ -94,7 +94,7 @@ module.exports = {
 			shift: 0,
 			undocumented: false,
 			image: `./img/disc_staff.svg`,
-			emoji: `<:disc_staff:1041783936369561761>`,
+			emoji: `<:_:1041783936369561761>`,
 		},
 		{
 			name: `TeamPseudoUser`,
@@ -102,7 +102,7 @@ module.exports = {
 			shift: 10,
 			undocumented: false,
 			image: `./img/disc_team.png`,
-			emoji: `<:disc_team:1041901713344450560>`,
+			emoji: `<:_:1041901713344450560>`,
 		},
 		{
 			name: `VerifiedBot`,
@@ -110,7 +110,7 @@ module.exports = {
 			shift: 16,
 			undocumented: false,
 			image: `./img/disc_ver_bot.png`,
-			emoji: `<:disc_ver_bot:1041901714808254565>`,
+			emoji: `<:_:1041901714808254565>`,
 		},
 		{
 			name: `VerifiedDeveloper`,
@@ -118,7 +118,7 @@ module.exports = {
 			shift: 17,
 			undocumented: false,
 			image: `./img/disc_bot_dev.png`,
-			emoji: `<:disc_bot_dev:1041783918564741120>`,
+			emoji: `<:_:1041783918564741120>`,
 		},
 	],
 }

@@ -1,6 +1,6 @@
-const { SlashCommandSubcommandBuilder } = require(`@discordjs/builders`),
-	{ CommandInteraction, Colors } = require(`discord.js`),
-	{ random } = require(`../../func/func`)
+const { SlashCommandSubcommandBuilder } = require(`@discordjs/builders`)
+const { CommandInteraction, Colors } = require(`discord.js`)
+const { random } = require(`../func/func`)
 
 let command = {
 	name: `polvo`,

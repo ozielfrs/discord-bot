@@ -1,10 +1,10 @@
 const {
-		SlashCommandSubcommandBuilder,
-		time,
-		TimestampStyles,
-	} = require(`@discordjs/builders`),
-	{ CommandInteraction } = require('discord.js'),
-	{ discordBadges } = require(`../../func/utils/badges`)
+	SlashCommandSubcommandBuilder,
+	time,
+	TimestampStyles,
+} = require(`@discordjs/builders`)
+const { CommandInteraction } = require('discord.js')
+const { discordBadges } = require(`../func/utils/badges`)
 
 let cmd = {
 	name: `user`,
@@ -14,7 +14,7 @@ let cmd = {
 		desc: `Marque um usuário`,
 		req: false,
 	},
-	fmt: {
+	img: {
 		width: 256,
 		dynamic: true,
 	},
@@ -83,8 +83,10 @@ module.exports = {
 
 		if (badges.length != 0) {
 			badgesField.value = badges
-				.map(b => (b = discordBadges.find(e => e.name === b).emoji))
-				.join(` `)
+				.map(
+					badge => (badge = discordBadges.find(emoji => emoji.name === badge).emoji)
+				)
+				.join(``)
 			fields.push(badgesField)
 		}
 
@@ -105,7 +107,7 @@ module.exports = {
 				icon_url: guild.iconURL(),
 			},
 			thumbnail: {
-				url: mention.displayAvatarURL(cmd.fmt),
+				url: mention.displayAvatarURL(cmd.img),
 			},
 			timestamp: new Date().toISOString(),
 		}
