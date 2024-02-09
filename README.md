@@ -11,6 +11,6 @@ Decidi deixar o código em aberto caso alguém precise de qualquer referência p
 
 - Créditos:
 
-  - Badge Images from [here](https://github.com/Vtz7/Badges) by [Vtz7](https://github.com/Vtz7)
+  - Badge Images from [here](https://github.com/Vtz7/Badges) by [Vtz7](https://github.com/Vtz7) (They deleted this repository D:)
 
   - Badge Format in JS inspired from [this repository](https://github.com/lewisakura/discord-flags/blob/master/flags/user.json) by [lewisakura](https://github.com/lewisakura).

@@ -22,6 +22,7 @@
 	"homepage": "https://github.com/ozielfrs/Discord-Bot-Node.js#readme",
 	"dependencies": {
 		"discord.js": "^14.6.0",
-		"nodemon": "^2.0.20"
+		"dotenv": "^16.4.1",
+		"nodemon": "^3.0.3"
 	}
 }

@@ -1,59 +1,59 @@
-const { conf } = require(`./paths`)
-const { cliID, Guilds, token } = require(conf)
-
-const { REST } = require(`@discordjs/rest`)
-const { Routes } = require(`discord-api-types/v10`)
-const fs = require(`node:fs`)
+const { REST } = require(`@discordjs/rest`);
+const { Routes } = require(`discord-api-types/v10`);
+const fs = require(`node:fs`);
+const dotenv = require('dotenv');
+dotenv.config();
 
 /**
  * Path for commands and commands array
  */
 const commandPaths = fs
-		.readdirSync(`./src/cmd`, { withFileTypes: true })
-		.filter(dirent => dirent.isDirectory())
-		.map(dirent => dirent.name),
-	commands = []
+  .readdirSync(`./src/cmd`, { withFileTypes: true })
+  .filter((dirent) => dirent.isDirectory())
+  .map((dirent) => dirent.name);
+
+const commands = [];
 
 /**
  * Find and add subcommands
  */
-commandPaths.forEach(file => {
-	let main = require(`./src/cmd/${file}/${file}.js`)
+commandPaths.forEach((file) => {
+  if (file === `func`) return;
 
-	const subCommandFiles = fs
-		.readdirSync(`./src/cmd/${file}`)
-		.filter(sub => sub.endsWith(`.js`) && !sub.includes(`${file}`))
+  let main = require(`./src/cmd/${file}/${file}.js`);
 
-	console.log(file, subCommandFiles)
+  const subCommandFiles = fs
+    .readdirSync(`./src/cmd/${file}`)
+    .filter((sub) => sub.endsWith(`.js`) && !sub.includes(`${file}`));
 
-	const slashWithSubs = main.data
+  console.log(file, subCommandFiles);
 
-	subCommandFiles.forEach(fileName => {
-		let command = require(`./src/cmd/${file}/${fileName}`)
-		slashWithSubs.addSubcommand(command.data)
-	})
+  const slashWithSubs = main.data;
 
-	commands.push(slashWithSubs.toJSON())
-})
+  subCommandFiles.forEach((fileName) => {
+    let command = require(`./src/cmd/${file}/${fileName}`);
+    slashWithSubs.addSubcommand(command.data);
+  });
 
-const rest = new REST({ version: `10` }).setToken(token)
+  commands.push(slashWithSubs.toJSON());
+});
 
-;(async () => {
-	try {
-		console.log(`Started refreshing ${commands.length} application (/) commands.`)
+const rest = new REST({ version: `10` }).setToken(process.env.TOKEN);
 
-		for (const guild of Guilds) {
-			let request = await rest
-				.put(Routes.applicationGuildCommands(cliID, `${guild.id}`), {
-					body: commands.filter(command => guild.options.includes(command.name)),
-				})
-				.catch(err => console.error(err))
+(async () => {
+  try {
+    console.log(
+      `Started refreshing ${commands.length} application (/) commands.`,
+    );
 
-			console.log(
-				`Successfully reloaded ${request.length} application (/) commands in ${guild.id}.`
-			)
-		}
-	} catch (err) {
-		console.error(err)
-	}
-})()
+    await rest.put(
+      Routes.applicationGuildCommands(
+        process.env.CLIENT_ID,
+        process.env.GUILD_ID,
+      ),
+      { body: commands },
+    );
+  } catch (err) {
+    console.error(err);
+  }
+})();
